@@ -78,10 +78,36 @@ if (!isset($_SESSION['user_id'])) {
         </div>
         <div class="receipt-footer">
             <p class="total-text" id="grand-total">TOTAL: ₱0.00</p>
-            <button class="checkout-btn" id="printBtn">PRINT RECEIPT</button>
+            <button class="checkout-btn" id="placeOrderBtn">PLACE ORDER</button>
+            <button class="checkout-btn" id="printBtn" style="margin-top:8px">PRINT RECEIPT</button>
         </div>
     </div>
 </div>
+
+<div id="placeOrderModal" class="order-modal">
+    <div class="order-modal-content">
+        <h3>Place Order</h3>
+        <form id="placeOrderForm">
+            <label>Customer Name <input type="text" id="customerName" placeholder="e.g. Walk-in" required></label>
+            <label>Table Number <input type="text" id="tableNum" placeholder="e.g. 1" value="1"></label>
+            <div class="modal-btns">
+                <button type="submit" class="checkout-btn">Confirm Order</button>
+                <button type="button" class="btn-cancel-modal" onclick="closePlaceOrderModal()">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+.order-modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:999; justify-content:center; align-items:center; }
+.order-modal.open { display:flex; }
+.order-modal-content { background:white; padding:24px; border-radius:12px; min-width:320px; }
+.order-modal-content h3 { margin:0 0 16px; }
+.order-modal-content label { display:block; margin-bottom:12px; }
+.order-modal-content input { width:100%; padding:10px; border:2px solid #E8E0D5; border-radius:8px; box-sizing:border-box; }
+.modal-btns { display:flex; gap:10px; margin-top:16px; }
+.btn-cancel-modal { padding:10px 20px; background:#95a5a6; color:white; border:none; border-radius:8px; cursor:pointer; }
+</style>
 
 <script>
     const receiptContainer = document.getElementById('receipt-items');
@@ -134,9 +160,57 @@ if (!isset($_SESSION['user_id'])) {
 </script>
 
 <script>
+document.getElementById("placeOrderBtn").addEventListener("click", function () {
+    let count = 0;
+    Object.keys(cart).forEach(name => { if (cart[name].qty > 0) count++; });
+    if (count === 0) {
+        alert("No items in order.");
+        return;
+    }
+    document.getElementById("placeOrderModal").classList.add("open");
+});
+document.getElementById("placeOrderForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    const items = [];
+    Object.keys(cart).forEach(name => {
+        if (cart[name].qty > 0) {
+            items.push({ name: name, price: cart[name].price, qty: cart[name].qty });
+        }
+    });
+    fetch("api/save_order.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            customer_name: document.getElementById("customerName").value || "Walk-in",
+            table_num: document.getElementById("tableNum").value || "1",
+            items: items
+        })
+    })
+    .then(r => r.json())
+    .then(d => {
+        if (d.success) {
+            closePlaceOrderModal();
+            cart = {};
+            document.querySelectorAll(".qty-number").forEach(el => el.innerText = "0");
+            updateReceipt();
+            alert("Order #" + d.order_id + " placed successfully!");
+        } else {
+            alert(d.error || "Failed to place order");
+        }
+    });
+});
+function closePlaceOrderModal() {
+    document.getElementById("placeOrderModal").classList.remove("open");
+}
+document.getElementById("placeOrderModal").addEventListener("click", function(e) {
+    if (e.target === this) closePlaceOrderModal();
+});
+
 document.getElementById("printBtn").addEventListener("click", function () {
 
-    if (Object.keys(cart).length === 0) {
+    let count = 0;
+    Object.keys(cart).forEach(name => { if (cart[name].qty > 0) count++; });
+    if (count === 0) {
         alert("No items in order.");
         return;
     }

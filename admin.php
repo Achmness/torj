@@ -6,13 +6,27 @@ if(!isset($_SESSION['role']) || $_SESSION['role'] != 'admin'){
     exit();
 }
 
+include "db.php";
+
 $fullname = isset($_SESSION['fullname']) ? htmlspecialchars($_SESSION['fullname']) : 'Admin';
 
-// Mock data - leader will replace with database queries
+$today = date('Y-m-d');
 $today_earnings = 0;
 $orders_today = 0;
 $pending_count = 0;
 $mock_orders = [];
+
+$r = mysqli_query($conn, "SELECT SUM(total) as t, COUNT(*) as c FROM orders WHERE DATE(created_at) = '$today' AND status = 'completed'");
+if ($r && $row = mysqli_fetch_assoc($r)) {
+    $today_earnings = (float)($row['t'] ?? 0);
+    $orders_today = (int)($row['c'] ?? 0);
+}
+
+$r = mysqli_query($conn, "SELECT COUNT(*) as c FROM orders WHERE status = 'pending'");
+if ($r && $row = mysqli_fetch_assoc($r)) $pending_count = (int)($row['c'] ?? 0);
+
+$r = mysqli_query($conn, "SELECT * FROM orders ORDER BY created_at DESC LIMIT 10");
+if ($r) while ($row = mysqli_fetch_assoc($r)) $mock_orders[] = $row;
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -31,17 +45,21 @@ $mock_orders = [];
             <p class="sidebar-tagline">Coffee & Code</p>
         </div>
         <nav class="nav-links">
-            <a href="#" class="nav-item active">
+            <a href="home.php" class="nav-item active">
                 <i class="fas fa-shopping-cart"></i>
                 <span>New Order</span>
             </a>
-            <a href="#" class="nav-item">
+            <a href="orders.php" class="nav-item">
                 <i class="fas fa-list"></i>
                 <span>Orders</span>
             </a>
-            <a href="#" class="nav-item">
+            <a href="transactions.php" class="nav-item">
                 <i class="fas fa-exchange-alt"></i>
                 <span>Transactions</span>
+            </a>
+            <a href="products.php" class="nav-item">
+                <i class="fas fa-box"></i>
+                <span>Manage Products</span>
             </a>
         </nav>
         <a href="logout.php" class="nav-logout">
@@ -63,7 +81,7 @@ $mock_orders = [];
         <section class="summary-cards">
             <div class="summary-card summary-card-gold">
                 <i class="fas fa-dollar-sign"></i>
-                <p class="summary-value">$<?php echo number_format((float)$today_earnings, 2); ?></p>
+                <p class="summary-value">₱<?php echo number_format((float)$today_earnings, 2); ?></p>
                 <p class="summary-label">TODAY'S EARNINGS</p>
             </div>
             <div class="summary-card">
@@ -83,19 +101,19 @@ $mock_orders = [];
 
         <!-- Action Tiles -->
         <section class="action-tiles">
-            <a href="#" class="action-tile">
+            <a href="home.php" class="action-tile">
                 <i class="fas fa-shopping-cart"></i>
                 <span>New Order</span>
             </a>
-            <a href="#" class="action-tile">
+            <a href="orders.php" class="action-tile">
                 <i class="fas fa-list"></i>
                 <span>View Orders</span>
             </a>
-            <a href="#" class="action-tile">
+            <a href="transactions.php" class="action-tile">
                 <i class="fas fa-exchange-alt"></i>
                 <span>Transaction History</span>
             </a>
-            <a href="#" class="action-tile">
+            <a href="products.php" class="action-tile">
                 <i class="fas fa-box"></i>
                 <span>Manage Products</span>
             </a>
@@ -105,7 +123,7 @@ $mock_orders = [];
         <section class="recent-orders">
             <div class="recent-orders-header">
                 <h3 class="recent-orders-title">Recent Orders</h3>
-                <button type="button" class="btn-view-all">VIEW ALL</button>
+                <a href="orders.php" class="btn-view-all">VIEW ALL</a>
             </div>
             <div class="orders-table-wrapper">
                 <table class="orders-table">
@@ -122,17 +140,17 @@ $mock_orders = [];
                     <tbody>
                         <?php if (count($mock_orders) > 0): ?>
                             <?php foreach ($mock_orders as $order): ?>
-                                <tr class="order-row" data-id="<?php echo $order['id']; ?>">
+                                <tr class="order-row" data-id="<?php echo $order['id']; ?>" onclick="window.location='order_detail.php?id=<?php echo (int)$order['id']; ?>'">
                                     <td>#<?php echo $order['id']; ?></td>
                                     <td><?php echo htmlspecialchars($order['customer_name']); ?></td>
                                     <td><?php echo htmlspecialchars($order['table_num']); ?></td>
-                                    <td>$<?php echo number_format((float)$order['total'], 2); ?></td>
+                                    <td>₱<?php echo number_format((float)$order['total'], 2); ?></td>
                                     <td>
                                         <span class="status-badge status-<?php echo $order['status']; ?>">
                                             <?php echo ucfirst($order['status']); ?>
                                         </span>
                                     </td>
-                                    <td><i class="fas fa-chevron-right"></i></td>
+                                    <td><a href="order_detail.php?id=<?php echo (int)$order['id']; ?>" class="order-link"><i class="fas fa-chevron-right"></i></a></td>
                                 </tr>
                             <?php endforeach; ?>
                         <?php else: ?>
