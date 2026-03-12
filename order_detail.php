@@ -20,7 +20,7 @@ $items = [];
 $r = mysqli_query($conn, "SELECT * FROM orders WHERE id = $order_id");
 if ($r && $row = mysqli_fetch_assoc($r)) {
     $order = $row;
-    $r2 = mysqli_query($conn, "SELECT * FROM orders WHERE id = $order_id ORDER BY id");
+    $r2 = mysqli_query($conn, "SELECT * FROM order_items WHERE order_id = $order_id ORDER BY id");
     if ($r2) {
         while ($item = mysqli_fetch_assoc($r2)) $items[] = $item;
     }
@@ -51,7 +51,7 @@ $fullname = isset($_SESSION['fullname']) ? htmlspecialchars($_SESSION['fullname'
         </div>
         <nav class="nav-links">
             <a href="admin.php" class="nav-item"><i class="fas fa-home"></i><span>Dashboard</span></a>
-            <a href="home.php" class="nav-item"><i class="fas fa-shopping-cart"></i><span>New Order</span></a>
+            <a href="neworder.php" class="nav-item"><i class="fas fa-shopping-cart"></i><span>New Order</span></a>
             <a href="orders.php" class="nav-item active"><i class="fas fa-list"></i><span>Orders</span></a>
             <a href="transactions.php" class="nav-item"><i class="fas fa-exchange-alt"></i><span>Transactions</span></a>
             <a href="products.php" class="nav-item"><i class="fas fa-box"></i><span>Manage Products</span></a>

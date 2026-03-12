@@ -45,7 +45,11 @@ if ($r) while ($row = mysqli_fetch_assoc($r)) $mock_orders[] = $row;
             <p class="sidebar-tagline">Coffee & Code</p>
         </div>
         <nav class="nav-links">
-            <a href="home.php" class="nav-item active">
+            <a href="admin.php" class="nav-item active">
+                <i class="fas fa-home"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="neworder.php" class="nav-item">
                 <i class="fas fa-shopping-cart"></i>
                 <span>New Order</span>
             </a>
@@ -101,7 +105,7 @@ if ($r) while ($row = mysqli_fetch_assoc($r)) $mock_orders[] = $row;
 
         <!-- Action Tiles -->
         <section class="action-tiles">
-            <a href="home.php" class="action-tile">
+            <a href="neworder.php" class="action-tile">
                 <i class="fas fa-shopping-cart"></i>
                 <span>New Order</span>
             </a>

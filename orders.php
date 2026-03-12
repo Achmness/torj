@@ -31,6 +31,44 @@ if ($result) {
     <title>Orders - Debug Café</title>
     <link rel="stylesheet" href="admin.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        .status-select {
+            padding: 6px 12px;
+            border: 2px solid #E8E0D5;
+            border-radius: 8px;
+            background: white;
+            color: #5d4037;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .status-select:hover {
+            border-color: #ECB212;
+        }
+        .status-select:focus {
+            outline: none;
+            border-color: #8B6F47;
+            box-shadow: 0 0 0 3px rgba(139, 111, 71, 0.1);
+        }
+        .status-select option {
+            padding: 8px;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        .status-badge.status-completed {
+            background: #4caf50;
+            color: white;
+        }
+        .status-badge.status-cancelled {
+            background: #f44336;
+            color: white;
+        }
+    </style>
 </head>
 <body>
     <aside class="sidebar">
@@ -44,7 +82,7 @@ if ($result) {
                 <i class="fas fa-home"></i>
                 <span>Dashboard</span>
             </a>
-            <a href="home.php" class="nav-item">
+            <a href="neworder.php" class="nav-item">
                 <i class="fas fa-shopping-cart"></i>
                 <span>New Order</span>
             </a>
@@ -105,9 +143,19 @@ if ($result) {
                                     <td><?php echo htmlspecialchars($order['table_num']); ?></td>
                                     <td>₱<?php echo number_format((float)$order['total'], 2); ?></td>
                                     <td>
-                                        <span class="status-badge status-<?php echo $order['status']; ?>">
-                                            <?php echo ucfirst($order['status']); ?>
-                                        </span>
+                                        <?php if ($order['status'] === 'completed' || $order['status'] === 'cancelled'): ?>
+                                            <span class="status-badge status-<?php echo $order['status']; ?>">
+                                                <?php echo ucfirst($order['status']); ?>
+                                            </span>
+                                        <?php else: ?>
+                                            <select class="status-select" data-order-id="<?php echo $order['id']; ?>">
+                                                <option value="pending" <?php echo $order['status'] === 'pending' ? 'selected' : ''; ?>>Pending</option>
+                                                <option value="preparing" <?php echo $order['status'] === 'preparing' ? 'selected' : ''; ?>>Preparing</option>
+                                                <option value="ready" <?php echo $order['status'] === 'ready' ? 'selected' : ''; ?>>Ready</option>
+                                                <option value="completed" <?php echo $order['status'] === 'completed' ? 'selected' : ''; ?>>Completed</option>
+                                                <option value="cancelled" <?php echo $order['status'] === 'cancelled' ? 'selected' : ''; ?>>Cancelled</option>
+                                            </select>
+                                        <?php endif; ?>
                                     </td>
                                     <td><?php echo date('M j, g:i A', strtotime($order['created_at'])); ?></td>
                                     <td><a href="order_detail.php?id=<?php echo (int)$order['id']; ?>" class="btn-view">View</a></td>
@@ -123,5 +171,44 @@ if ($result) {
             </div>
         </section>
     </main>
+
+    <script>
+        document.querySelectorAll('.status-select').forEach(select => {
+            select.addEventListener('change', function() {
+                const orderId = this.dataset.orderId;
+                const newStatus = this.value;
+                
+                if (confirm(`Update order #${orderId} status to "${newStatus}"?`)) {
+                    fetch('api/update_order_status.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            order_id: orderId,
+                            status: newStatus
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert('Order status updated successfully!');
+                            location.reload();
+                        } else {
+                            alert('Error: ' + (data.error || 'Failed to update status'));
+                            location.reload();
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Failed to update order status');
+                        location.reload();
+                    });
+                } else {
+                    location.reload();
+                }
+            });
+        });
+    </script>
 </body>
 </html>

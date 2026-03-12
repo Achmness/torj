@@ -8,7 +8,7 @@ if (!isset($_SESSION['user_id'])) {
 
 include "db.php";
 
-$fullname = isset($_SESSION['fullname']) ? htmlspecialchars($_SESSION['fullname']) : 'Cashier';
+$fullname = isset($_SESSION['fullname']) ? htmlspecialchars($_SESSION['fullname']) : 'Admin';
 
 $products = [];
 $r = mysqli_query($conn, "SELECT * FROM products ORDER BY category, name");
@@ -38,24 +38,52 @@ $imgBase = $basePath ? $basePath . '/' : '';
             justify-content: center; 
         }
         .neworder-main .outer { margin: 0; }
+        
+        /* Back to Dashboard button styling */
+        .back-to-dashboard {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            padding: 1rem 0;
+            margin-left: 0px;
+            margin-bottom: 650px;
+            color: #E8E0D5;
+            text-decoration: none;
+            transition: all 0.3s;
+            border-top: 1px solid rgba(232, 224, 213, 0.2);
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        
+        .back-to-dashboard:hover {
+            color: #ECB212;
+        }
+        
+        .back-to-dashboard i {
+            font-size: 0.9rem;
+        }
     </style>
 </head>
 <body>
+    <a href="admin.php" class="back-to-dashboard">
+                        <i class="fas fa-arrow-left"></i>
+                        <span>Back to Dashboard</span>
+                    </a>
+    
     <div class="neworder-main">
         <div class="outer">
             <div class="inner-1">
                 <div class="innerimage">
+                    
                     <img src="logo.png" class="imagecafe" alt="Logo">
+
                     <p class="nav-header">PRODUCTS</p>
                     <div class="prod">
                         <p class="nav-item active" data-cat="hot">Hot Drinks</p>
                         <p class="nav-item" data-cat="cold">Cold Drinks</p>
                         <p class="nav-item" data-cat="bread">Bread and Pastries</p>
                     </div>
-                    <a href="logout.php" class="nav-logout">
-                        <i class="fas fa-sign-out-alt"></i>
-                        <span>Logout</span>
-                    </a>
+                    
                 </div>
             </div>
 
@@ -81,7 +109,7 @@ $imgBase = $basePath ? $basePath . '/' : '';
                     </div>
                     <?php endforeach; ?>
                     <?php if (count($products) === 0): ?>
-                        <p style="grid-column:1/-1; text-align:center; padding:40px;">No products yet.</p>
+                        <p style="grid-column:1/-1; text-align:center; padding:40px;">No products yet. Add products in <a href="products.php">Manage Products</a>.</p>
                     <?php endif; ?>
                 </div>
             </div>
@@ -125,29 +153,6 @@ $imgBase = $basePath ? $basePath . '/' : '';
     .modal-btns { display:flex; gap:10px; margin-top:16px; }
     .btn-cancel-modal { padding:10px 20px; background:#95a5a6; color:white; border:none; border-radius:8px; cursor:pointer; }
     .checkout-btn { cursor:pointer; }
-    
-    /* Logout button styling */
-    .nav-logout {
-        display: flex;
-        align-items: center;
-        gap: 0.8rem;
-        padding: 1rem 0;
-        margin-top: 380px;
-        margin-left: 25px;
-        color: #E8E0D5;
-        text-decoration: none;
-        transition: all 0.3s;
-        border-top: 1px solid rgba(232, 224, 213, 0.2);
-        
-    }
-    
-    .nav-logout:hover {
-        color: #ff5252;
-    }
-    
-    .nav-logout i {
-        font-size: 1rem;
-    }
     </style>
 
     <script>
