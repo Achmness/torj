@@ -24,7 +24,7 @@ if (isset($_POST['login'])) {
                 header("Location: admin.php"); 
             }
             elseif($row['role'] == "cashier") {
-                header("Location: home.php"); 
+                header("Location: cashier.php"); 
             }
             else {
                 header("Location: barista.php"); 

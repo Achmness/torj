@@ -1,0 +1,157 @@
+# Quick Setup Checklist
+
+## Step-by-Step Implementation Guide
+
+### ✅ STEP 1: Database Migration (REQUIRED)
+1. Open phpMyAdmin
+2. Select your database
+3. Go to SQL tab
+4. Copy and paste the contents of `migrate_optimized_orders.sql`
+5. Click "Go" to execute
+6. Verify new columns added to orders table:
+   - customer_id
+   - processed_by
+   - payment_status
+   - updated_at
+
+### ✅ STEP 2: Test Customer Ordering
+1. Open browser and go to: `http://localhost/torj/customer_order.php`
+2. Browse the menu (products should load automatically)
+3. Add items to cart
+4. Enter customer name and table number
+5. Click "Place Order"
+6. You should see success message with order ID
+
+### ✅ STEP 3: Test Barista View
+1. Login as barista
+2. Go to barista.php
+3. You should see the order you just placed
+4. Update status from "pending" to "preparing" to "ready"
+
+### ✅ STEP 4: Test Cashier Payment Processing
+1. Login as cashier or admin
+2. Go to orders.php
+3. You should see the order with:
+   - Status: "ready"
+   - Payment: "unpaid" (orange badge)
+   - "Process Payment" button
+4. Click "Process Payment"
+5. Confirm the action
+6. Order should now show:
+   - Status: "completed"
+   - Payment: "paid" (green badge)
+   - No more "Process Payment" button
+
+### ✅ STEP 5: Test Walk-in Orders (Optional)
+1. Login as cashier
+2. Go to neworder.php
+3. Take order manually for walk-in customer
+4. This should work as before
+
+---
+
+## Files Created/Modified
+
+### New Files:
+- ✅ `customer_order.php` - Customer self-ordering interface
+- ✅ `api/get_products.php` - API to fetch products
+- ✅ `api/process_payment.php` - API for payment processing
+- ✅ `migrate_optimized_orders.sql` - Database migration
+- ✅ `OPTIMIZED_SYSTEM_GUIDE.md` - Full documentation
+- ✅ `SYSTEM_FLOW_DIAGRAM.txt` - Visual flow diagram
+- ✅ `SETUP_CHECKLIST.txt` - This file
+
+### Modified Files:
+- ✅ `api/save_order.php` - Now handles customer_id and processed_by
+- ✅ `orders.php` - Shows payment status and payment button
+- ✅ `index.php` - Added "Order Now" links
+
+---
+
+## Troubleshooting
+
+### Problem: Products not loading in customer_order.php
+**Solution:** 
+- Check if products table has data
+- Verify api/get_products.php is accessible
+- Check browser console for errors
+
+### Problem: "Process Payment" button not working
+**Solution:**
+- Verify you're logged in as cashier or admin
+- Check api/process_payment.php exists
+- Check browser console for errors
+
+### Problem: Database error when placing order
+**Solution:**
+- Make sure you ran the migration SQL
+- Verify all new columns exist in orders table
+- Check db.php connection settings
+
+### Problem: Order not showing in barista view
+**Solution:**
+- Refresh the page
+- Check if order was actually created in database
+- Verify barista.php is querying orders correctly
+
+---
+
+## Quick Test Script
+
+Run this in phpMyAdmin SQL tab to verify your setup:
+
+```sql
+-- Check if new columns exist
+DESCRIBE orders;
+
+-- Should show: customer_id, processed_by, payment_status, updated_at
+
+-- Check recent orders
+SELECT 
+    id,
+    customer_id,
+    processed_by,
+    customer_name,
+    status,
+    payment_status,
+    created_at
+FROM orders
+ORDER BY created_at DESC
+LIMIT 5;
+```
+
+---
+
+## Next Steps After Setup
+
+1. **Test thoroughly** - Try all user flows
+2. **Train staff** - Show cashiers and baristas the new system
+3. **Add signage** - Put up signs directing customers to order
+4. **Monitor** - Watch for any issues in first few days
+5. **Optimize** - Adjust based on feedback
+
+---
+
+## Support
+
+If you need help:
+1. Check OPTIMIZED_SYSTEM_GUIDE.md for detailed info
+2. Review SYSTEM_FLOW_DIAGRAM.txt for flow understanding
+3. Check browser console for JavaScript errors
+4. Check PHP error logs for server errors
+
+---
+
+## Success Indicators
+
+You'll know it's working when:
+- ✅ Customers can place orders without staff help
+- ✅ Baristas see orders and update status
+- ✅ Cashiers can process payments with one click
+- ✅ Orders show correct customer_id and processed_by
+- ✅ Payment status updates correctly
+- ✅ Walk-in orders still work via neworder.php
+
+---
+
+**Ready to go live? Start with STEP 1 above!**

@@ -15,8 +15,17 @@ $where = '';
 if ($filter === 'pending') $where = " WHERE status = 'pending'";
 if ($filter === 'completed') $where = " WHERE status = 'completed'";
 
+// Check if new columns exist
+$check = mysqli_query($conn, "SHOW COLUMNS FROM orders LIKE 'processed_by'");
+$has_processed_by = mysqli_num_rows($check) > 0;
+
 $orders = [];
-$result = mysqli_query($conn, "SELECT * FROM orders $where ORDER BY created_at DESC");
+if ($has_processed_by) {
+    $result = mysqli_query($conn, "SELECT o.*, u.fullname as processor_name FROM orders o LEFT JOIN users u ON o.processed_by = u.id $where ORDER BY created_at DESC");
+} else {
+    $result = mysqli_query($conn, "SELECT * FROM orders $where ORDER BY created_at DESC");
+}
+
 if ($result) {
     while ($row = mysqli_fetch_assoc($result)) {
         $orders[] = $row;
@@ -67,6 +76,35 @@ if ($result) {
         .status-badge.status-cancelled {
             background: #f44336;
             color: white;
+        }
+        .payment-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+        .payment-badge.paid {
+            background: #4caf50;
+            color: white;
+        }
+        .payment-badge.unpaid {
+            background: #ff9800;
+            color: white;
+        }
+        .btn-process-payment {
+            padding: 6px 12px;
+            background: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .btn-process-payment:hover {
+            background: #45a049;
         }
     </style>
 </head>
@@ -130,8 +168,9 @@ if ($result) {
                             <th>Table</th>
                             <th>Total</th>
                             <th>Status</th>
+                            <th>Payment</th>
                             <th>Date</th>
-                            <th></th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -157,13 +196,27 @@ if ($result) {
                                             </select>
                                         <?php endif; ?>
                                     </td>
+                                    <td>
+                                        <?php 
+                                        $payment_status = $order['payment_status'] ?? 'unpaid';
+                                        $payment_class = $payment_status === 'paid' ? 'paid' : 'unpaid';
+                                        ?>
+                                        <span class="payment-badge <?php echo $payment_class; ?>">
+                                            <?php echo ucfirst($payment_status); ?>
+                                        </span>
+                                    </td>
                                     <td><?php echo date('M j, g:i A', strtotime($order['created_at'])); ?></td>
-                                    <td><a href="order_detail.php?id=<?php echo (int)$order['id']; ?>" class="btn-view">View</a></td>
+                                    <td>
+                                        <a href="order_detail.php?id=<?php echo (int)$order['id']; ?>" class="btn-view">View</a>
+                                        <?php if ($payment_status === 'unpaid'): ?>
+                                            <button class="btn-process-payment" onclick="processPayment(<?php echo $order['id']; ?>)">Process Payment</button>
+                                        <?php endif; ?>
+                                    </td>
                                 </tr>
                             <?php endforeach; ?>
                         <?php else: ?>
                             <tr>
-                                <td colspan="7" class="no-orders">No orders found.</td>
+                                <td colspan="8" class="no-orders">No orders found.</td>
                             </tr>
                         <?php endif; ?>
                     </tbody>
@@ -173,6 +226,7 @@ if ($result) {
     </main>
 
     <script>
+        // Update order status
         document.querySelectorAll('.status-select').forEach(select => {
             select.addEventListener('change', function() {
                 const orderId = this.dataset.orderId;
@@ -209,6 +263,34 @@ if ($result) {
                 }
             });
         });
+
+        // Process payment
+        function processPayment(orderId) {
+            if (confirm(`Process payment for order #${orderId}?`)) {
+                fetch('api/process_payment.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        order_id: orderId
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Payment processed successfully!');
+                        location.reload();
+                    } else {
+                        alert('Error: ' + (data.error || 'Failed to process payment'));
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Failed to process payment');
+                });
+            }
+        }
     </script>
 </body>
 </html>

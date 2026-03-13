@@ -2,7 +2,7 @@
 session_start();
 header('Content-Type: application/json');
 
-if (!isset($_SESSION['role']) || $_SESSION['role'] != 'admin') {
+if (!isset($_SESSION['role']) || ($_SESSION['role'] != 'admin' && $_SESSION['role'] != 'barista')) {
     echo json_encode(['success' => false, 'error' => 'Unauthorized']);
     exit();
 }
@@ -25,7 +25,16 @@ if (!in_array($status, $allowed_statuses)) {
     exit();
 }
 
-$query = "UPDATE orders SET status = '$status' WHERE id = $order_id";
+// Check if updated_at column exists
+$check = mysqli_query($conn, "SHOW COLUMNS FROM orders LIKE 'updated_at'");
+$has_updated_at = mysqli_num_rows($check) > 0;
+
+if ($has_updated_at) {
+    $query = "UPDATE orders SET status = '$status', updated_at = NOW() WHERE id = $order_id";
+} else {
+    $query = "UPDATE orders SET status = '$status' WHERE id = $order_id";
+}
+
 $result = mysqli_query($conn, $query);
 
 if ($result) {

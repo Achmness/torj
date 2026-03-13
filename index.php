@@ -6,11 +6,14 @@ if(isset($_SESSION['role'])) {
     if($_SESSION['role'] == 'admin') {
         header("Location: admin.php");
         exit();
+    } elseif($_SESSION['role'] == 'cashier') {
+        header("Location: cashier.php");
+        exit();
     } elseif($_SESSION['role'] == 'barista') {
         header("Location: barista.php");
         exit();
     } else {
-        header("Location: home.php");
+        header("Location: customer_order.php");
         exit();
     }
 }
@@ -344,6 +347,7 @@ if(isset($_SESSION['role'])) {
             <i class="fas fa-mug-hot"></i> The Debug Café
         </div>
         <div class="nav-links">
+            <a href="customer_order.php">Order Now</a>
             <a href="login.php" class="btn btn-login">
                 <i class="fas fa-sign-in-alt"></i> Login
             </a>
@@ -359,6 +363,7 @@ if(isset($_SESSION['role'])) {
             <h1>Coffee & Code</h1>
             <p>Where ideas brew and innovation flows</p>
             <div class="hero-buttons">
+                <a href="customer_order.php" class="btn btn-register">Order Now</a>
                 <a href="register.php" class="btn btn-register">Get Started</a>
                 <a href="login.php" class="btn btn-login">Sign In</a>
             </div>

@@ -2,11 +2,6 @@
 session_start();
 header('Content-Type: application/json');
 
-if (!isset($_SESSION['user_id'])) {
-    echo json_encode(['success' => false, 'error' => 'Not logged in']);
-    exit;
-}
-
 include __DIR__ . '/../db.php';
 
 $input = json_decode(file_get_contents('php://input'), true);
@@ -15,7 +10,25 @@ if (!$input || empty($input['items']) || !is_array($input['items'])) {
     exit;
 }
 
-$user_id = $_SESSION['user_id'] ?? NULL;
+// Determine who is placing the order
+$customer_id = NULL;
+$processed_by = NULL;
+$order_type = $input['order_type'] ?? 'customer'; // 'customer' or 'cashier'
+
+if (isset($_SESSION['user_id'])) {
+    $user_role = $_SESSION['role'] ?? '';
+    
+    if ($user_role === 'cashier' || $user_role === 'admin') {
+        // Cashier/Admin is placing order for walk-in customer
+        $processed_by = $_SESSION['user_id'];
+        $customer_id = NULL; // Walk-in customer has no account
+    } else {
+        // Customer is placing their own order
+        $customer_id = $_SESSION['user_id'];
+        $processed_by = NULL; // No cashier involved yet
+    }
+}
+
 $customer_name = trim($input['customer_name'] ?? 'Walk-in');
 $table_num = trim($input['table_num'] ?? '1');
 $items = $input['items'];
@@ -27,8 +40,8 @@ foreach ($items as $it) {
     if ($qty > 0 && $price >= 0) $total += $qty * $price;
 }
 
-$stmt = $conn->prepare("INSERT INTO orders (user_id, customer_name, table_num, total, status) VALUES (?, ?, ?, ?, 'pending')");
-$stmt->bind_param("issd", $user_id, $customer_name, $table_num, $total);
+$stmt = $conn->prepare("INSERT INTO orders (customer_id, processed_by, customer_name, table_num, total, status, payment_status) VALUES (?, ?, ?, ?, ?, 'pending', 'unpaid')");
+$stmt->bind_param("iissd", $customer_id, $processed_by, $customer_name, $table_num, $total);
 if (!$stmt->execute()) {
     echo json_encode(['success' => false, 'error' => 'Failed to create order']);
     exit;
