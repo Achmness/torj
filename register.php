@@ -30,119 +30,149 @@ if (isset($_POST['register'])) {
 <html>
 <head>
     <title>Register - The Debug Café</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        /* Full-page body */
-body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: relative;
-    overflow: hidden;
-}
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-/* Blurred logo background */
-body::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0;
-    width: 100%;
-    height: 100%;
-    background: url('logo.png') center center no-repeat;
-    background-size: cover;
-    filter: blur(20px);
-    -webkit-filter: blur(20px); /* Safari */
-    z-index: 0;
-    opacity: 0.6; /* adjust blur visibility */
-}
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, #5d4037 0%, #8B6F47 100%);
+        }
 
-/* Form container */
-.register-box {
-    position: relative;
-    z-index: 1; /* above blurred background */
-    background-color: rgba(244, 225, 193, 0.95); /* semi-transparent form */
-    padding: 40px;
-    border: 4px solid #f2b705;
-    border-radius: 15px;
-    width: 370px;
-    text-align: center;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.2);
-}
+        /* Animated wave background */
+        body::before {
+            content: '';
+            position: absolute;
+            width: 150%;
+            height: 150%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120"><path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" fill="rgba(255,255,255,0.05)"/></svg>') repeat-x;
+            animation: wave 20s linear infinite;
+            opacity: 0.3;
+            z-index: 0;
+        }
 
-/* Logo inside form */
-.logo {
-    width: 80px;
-    margin-bottom: 10px;
-}
+        @keyframes wave {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
 
-/* Title */
-.title {
-    font-size: 24px;
-    font-weight: bold;
-    color: #4b3200;
-    margin-bottom: 20px;
-}
+        /* Form container */
+        .register-box {
+            position: relative;
+            z-index: 1;
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 20px;
+            width: 400px;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
 
-/* Inputs */
-input {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 15px;
-    border: 2px solid #f2b705;
-    border-radius: 8px;
-    outline: none;
-}
+        .logo {
+            width: 80px;
+            margin-bottom: 10px;
+        }
 
-/* Submit button */
-button {
-    width: 100%;
-    padding: 10px;
-    background-color: #4b3200;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: bold;
-    transition: all 0.3s ease;
-}
+        .title {
+            font-size: 28px;
+            font-weight: bold;
+            color: #5d4037;
+            margin-bottom: 10px;
+        }
 
-button:hover {
-    background-color: #6b4500;
-    transform: translateY(-2px);
-}
+        .subtitle {
+            font-size: 14px;
+            color: #8B6F47;
+            margin-bottom: 30px;
+        }
 
-/* Back button */
-.btn-back {
-    display: inline-block;
-    margin-bottom: 20px;
-    padding: 8px 20px;
-    background-color: #f2b705;
-    color: #4b3200;
-    text-decoration: none;
-    font-weight: bold;
-    border-radius: 8px;
-    transition: all 0.3s ease;
-}
+        input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 2px solid #E8E0D5;
+            border-radius: 10px;
+            outline: none;
+            font-size: 14px;
+            transition: border 0.3s;
+        }
 
-.btn-back:hover {
-    background-color: #e0a700;
-    transform: translateY(-2px);
-}
+        input:focus {
+            border-color: #ECB212;
+        }
 
-/* Links */
-a {
-    color: #4b3200;
-    font-weight: bold;
-    text-decoration: none;
-}
+        button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #5d4037 0%, #8B6F47 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
 
-/* Error message */
-.error {
-    color: red;
-    margin-bottom: 10px;
-}
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(93, 64, 55, 0.3);
+        }
+
+        a {
+            color: #5d4037;
+            font-weight: bold;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        a:hover {
+            color: #ECB212;
+        }
+
+        .error {
+            background: #fee;
+            color: #c33;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+
+        /* Back button */
+        .btn-back {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 24px;
+            background-color: #ECB212;
+            color: #3d2d00;
+            text-decoration: none;
+            font-weight: bold;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-back:hover {
+            background-color: #d4a010;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(236, 178, 18, 0.3);
+            color: #3d2d00;
+        }
+
+        p {
+            margin-top: 20px;
+            color: #666;
+        }
     </style>
 </head>
 <body>
@@ -151,12 +181,13 @@ a {
 
     <img src="logo.png" class="logo">
     <div class="title">The Debug Café</div>
+    <div class="subtitle">Coffee & Code</div>
 
     <?php if(isset($error)) { ?>
         <div class="error"><?php echo $error; ?></div>
     <?php } ?>
 
-    <a href="index.php" class="btn-back">← Back</a>
+    <a href="index.php" class="btn-back"><i class="fas fa-arrow-left"></i> Back to Home</a>
 
     <form method="POST">
         <input type="text" name="fullname" placeholder="Full Name" required>
@@ -165,29 +196,9 @@ a {
         <button type="submit" name="register">Register</button>
     </form>
 
-    <br>
     <p>Already have account? <a href="login.php">Login</a></p>
 
 </div>
-
-<style>
-    .btn-back {
-    display: inline-block;
-    margin-bottom: 20px;
-    padding: 8px 20px;
-    background-color: #f2b705;
-    color: #4b3200;
-    text-decoration: none;
-    font-weight: bold;
-    border-radius: 8px;
-    transition: all 0.3s ease;
-}
-
-.btn-back:hover {
-    background-color: #e0a700;
-    transform: translateY(-2px);
-}
-</style>
 
 </body>
 </html>

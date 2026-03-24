@@ -10,12 +10,10 @@ include "db.php";
 
 $fullname = isset($_SESSION['fullname']) ? htmlspecialchars($_SESSION['fullname']) : 'Cashier';
 
-// Get products for ordering
 $products = [];
 $r = mysqli_query($conn, "SELECT * FROM products ORDER BY category, name");
 if ($r) while ($row = mysqli_fetch_assoc($r)) $products[] = $row;
 
-// Get pending/unpaid orders for payment processing
 $pending_orders = [];
 $orders_query = "SELECT o.*, 
     (SELECT GROUP_CONCAT(CONCAT(oi.product_name, ' x', oi.quantity) SEPARATOR ', ') 
@@ -298,8 +296,10 @@ $imgBase = $basePath ? $basePath . '/' : '';
             background: white;
             padding: 30px;
             border-radius: 12px;
-            max-width: 500px;
+            max-width: 600px;
             width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
         }
         
         .payment-modal-content h3 {
@@ -356,6 +356,41 @@ $imgBase = $basePath ? $basePath . '/' : '';
             display: block;
         }
         
+        .online-payment-section {
+            display: none;
+            margin: 20px 0;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .online-payment-section.active {
+            display: block;
+        }
+        
+        .qr-code-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border: 2px solid #ECB212;
+        }
+        
+        .qr-code-container img {
+            max-width: 250px;
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+        
+        .qr-code-container p {
+            margin: 10px 0 0 0;
+            color: #3d2d00;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+        
         .form-group {
             margin-bottom: 15px;
         }
@@ -377,12 +412,12 @@ $imgBase = $basePath ? $basePath . '/' : '';
         }
         
         .change-display {
-            background: #3d2d00;
-            color: #ECB212;
-            padding: 20px;
+            color: #3d2d00;
+            padding: 5px;
             border-radius: 10px;
-            text-align: center;
+            text-align: left;
             margin-top: 15px;
+            margin-bottom: 0px;
             font-size: 1.5rem;
             font-weight: bold;
         }
@@ -584,13 +619,19 @@ $imgBase = $basePath ? $basePath . '/' : '';
         <div class="payment-modal-content">
             <h3><i class="fas fa-cash-register"></i> Process Payment</h3>
             
-            <div style="background: #f9f9f9; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-                <p><strong>Order #<span id="modalOrderId"></span></strong></p>
-                <p><strong>Customer:</strong> <span id="modalCustomerName"></span></p>
-                <p style="font-size: 1.5rem; color: #3d2d00; margin-top: 10px;"><strong>Total: ₱<span id="modalTotal"></span></strong></p>
+            <div style="background: #f9f9f9; padding: 15px; border-radius: 8px; margin-bottom: 0px; margin-top: 0px;">
+                <p style="margin-top: 0px; margin-bottom: 0px;"><strong>Order #<span id="modalOrderId"></span></strong></p>
+                <p style="margin-top: 0px; margin-bottom: 0px;"><strong>Customer:</strong> <span id="modalCustomerName"></span></p>
+                <p style="font-size: 1.2rem; color: #666; margin-top: 0px; margin-bottom: 0px;"><strong>Original Total: ₱<span id="modalOriginalTotal"></span></strong></p>
+                <div style="margin-top: 15px; padding: 15px; background: #fff; border-radius: 8px; border: 2px solid #ECB212;">
+                    <label style="display: block; margin-bottom: 8px; font-weight: bold; color: #3d2d00;">Discount (%):</label>
+                    <input type="number" id="discountPercent" placeholder="Enter discount %" min="0" max="100" step="0.01" value="0" style="width: 95%; padding: 10px; border: 2px solid #E8E0D5; border-radius: 8px; font-size: 1rem;">
+                    <p style="font-size: 0.9rem; color: #666; margin-top: 3px; margin-bottom: 0px;">Discount Amount: ₱<span id="discountAmount">0.00</span></p>
+                </div>
+                <p style="font-size: 1.5rem; color: #3d2d00; margin-top: 3px; margin-bottom: 0px; font-weight: bold;"><strong>Final Total: ₱<span id="modalTotal"></span></strong></p>
             </div>
             
-            <h4 style="margin-bottom: 15px; color: #3d2d00;">Select Payment Method:</h4>
+            <h4 style="margin-bottom: 0px; margin-top: 0px; color: #3d2d00;">Select Payment Method:</h4>
             
             <div class="payment-method-btns">
                 <div class="payment-method-btn" onclick="selectPaymentMethod('cash')">
@@ -612,6 +653,15 @@ $imgBase = $basePath ? $basePath . '/' : '';
                 <div class="change-display" id="changeDisplay">
                     Change: ₱0.00
                 </div>
+            </div>
+            
+            <div id="onlinePaymentSection" class="online-payment-section">
+                <h4 style="color: #3d2d00; margin-top: 0;">Scan GCash QR Code</h4>
+                <div class="qr-code-container">
+                    <img src="gcash_qr.png" alt="GCash QR Code">
+                    <p>Scan to Pay via GCash</p>
+                </div>
+                <p style="color: #666; font-size: 0.9rem;">After payment, click Confirm Payment below</p>
             </div>
             
             <div class="modal-buttons">
@@ -783,21 +833,27 @@ $imgBase = $basePath ? $basePath . '/' : '';
     // PAYMENT PROCESSING LOGIC
     let currentOrderId = null;
     let currentOrderTotal = 0;
+    let originalOrderTotal = 0;
     let selectedPaymentMethod = null;
 
     function openPaymentModal(orderId, customerName, total) {
         currentOrderId = orderId;
         currentOrderTotal = total;
+        originalOrderTotal = total;
         selectedPaymentMethod = null;
         
         document.getElementById('modalOrderId').textContent = orderId;
         document.getElementById('modalCustomerName').textContent = customerName;
+        document.getElementById('modalOriginalTotal').textContent = total.toFixed(2);
         document.getElementById('modalTotal').textContent = total.toFixed(2);
         
         // Reset form
+        document.getElementById('discountPercent').value = '0';
+        document.getElementById('discountAmount').textContent = '0.00';
         document.getElementById('cashReceived').value = '';
         document.getElementById('changeDisplay').textContent = 'Change: ₱0.00';
         document.getElementById('cashPaymentSection').classList.remove('active');
+        document.getElementById('onlinePaymentSection').classList.remove('active');
         document.getElementById('confirmPaymentBtn').disabled = true;
         
         // Remove selected class from all payment methods
@@ -812,8 +868,38 @@ $imgBase = $basePath ? $basePath . '/' : '';
         document.getElementById('paymentModal').classList.remove('open');
         currentOrderId = null;
         currentOrderTotal = 0;
+        originalOrderTotal = 0;
         selectedPaymentMethod = null;
     }
+
+    // Calculate discount
+    document.getElementById('discountPercent').addEventListener('input', function() {
+        const discountPercent = parseFloat(this.value) || 0;
+        const discountAmount = (originalOrderTotal * discountPercent) / 100;
+        const finalTotal = originalOrderTotal - discountAmount;
+        
+        currentOrderTotal = finalTotal;
+        document.getElementById('discountAmount').textContent = discountAmount.toFixed(2);
+        document.getElementById('modalTotal').textContent = finalTotal.toFixed(2);
+        
+        // Recalculate change if cash payment is active
+        if (selectedPaymentMethod === 'cash') {
+            const received = parseFloat(document.getElementById('cashReceived').value) || 0;
+            const change = received - currentOrderTotal;
+            
+            if (change >= 0) {
+                document.getElementById('changeDisplay').textContent = `Change: ₱${change.toFixed(2)}`;
+                document.getElementById('changeDisplay').style.backgroundColor = '#3d2d00';
+                document.getElementById('changeDisplay').style.color = '#ECB212';
+                document.getElementById('confirmPaymentBtn').disabled = false;
+            } else {
+                document.getElementById('changeDisplay').textContent = `Insufficient: ₱${Math.abs(change).toFixed(2)} more needed`;
+                document.getElementById('changeDisplay').style.backgroundColor = '#e74c3c';
+                document.getElementById('changeDisplay').style.color = 'white';
+                document.getElementById('confirmPaymentBtn').disabled = true;
+            }
+        }
+    });
 
     function selectPaymentMethod(method) {
         selectedPaymentMethod = method;
@@ -826,9 +912,11 @@ $imgBase = $basePath ? $basePath . '/' : '';
         
         if (method === 'cash') {
             document.getElementById('cashPaymentSection').classList.add('active');
+            document.getElementById('onlinePaymentSection').classList.remove('active');
             document.getElementById('confirmPaymentBtn').disabled = true;
         } else {
             document.getElementById('cashPaymentSection').classList.remove('active');
+            document.getElementById('onlinePaymentSection').classList.add('active');
             document.getElementById('confirmPaymentBtn').disabled = false;
         }
     }
@@ -840,12 +928,12 @@ $imgBase = $basePath ? $basePath . '/' : '';
         
         if (change >= 0) {
             document.getElementById('changeDisplay').textContent = `Change: ₱${change.toFixed(2)}`;
-            document.getElementById('changeDisplay').style.background = '#3d2d00';
+            document.getElementById('changeDisplay').style.backgroundColor = '#3d2d00';
             document.getElementById('changeDisplay').style.color = '#ECB212';
             document.getElementById('confirmPaymentBtn').disabled = false;
         } else {
             document.getElementById('changeDisplay').textContent = `Insufficient: ₱${Math.abs(change).toFixed(2)} more needed`;
-            document.getElementById('changeDisplay').style.background = '#e74c3c';
+            document.getElementById('changeDisplay').style.backgroundColor = '#e74c3c';
             document.getElementById('changeDisplay').style.color = 'white';
             document.getElementById('confirmPaymentBtn').disabled = true;
         }
@@ -857,6 +945,9 @@ $imgBase = $basePath ? $basePath . '/' : '';
             return;
         }
         
+        const discountPercent = parseFloat(document.getElementById('discountPercent').value) || 0;
+        const discountAmount = (originalOrderTotal * discountPercent) / 100;
+        
         if (selectedPaymentMethod === 'cash') {
             const received = parseFloat(document.getElementById('cashReceived').value) || 0;
             const change = received - currentOrderTotal;
@@ -866,17 +957,29 @@ $imgBase = $basePath ? $basePath . '/' : '';
                 return;
             }
             
-            if (confirm(`Confirm Cash Payment?\n\nReceived: ₱${received.toFixed(2)}\nChange: ₱${change.toFixed(2)}`)) {
-                processPaymentAPI(currentOrderId, selectedPaymentMethod, received, change);
+            let confirmMsg = `Confirm Cash Payment?\n\nOriginal Total: ₱${originalOrderTotal.toFixed(2)}`;
+            if (discountPercent > 0) {
+                confirmMsg += `\nDiscount (${discountPercent}%): -₱${discountAmount.toFixed(2)}`;
+            }
+            confirmMsg += `\nFinal Total: ₱${currentOrderTotal.toFixed(2)}\nReceived: ₱${received.toFixed(2)}\nChange: ₱${change.toFixed(2)}`;
+            
+            if (confirm(confirmMsg)) {
+                processPaymentAPI(currentOrderId, selectedPaymentMethod, received, change, discountPercent, discountAmount, currentOrderTotal);
             }
         } else {
-            if (confirm(`Confirm Online/Card Payment?\n\nTotal: ₱${currentOrderTotal.toFixed(2)}`)) {
-                processPaymentAPI(currentOrderId, selectedPaymentMethod, currentOrderTotal, 0);
+            let confirmMsg = `Confirm Online/Card Payment?\n\nOriginal Total: ₱${originalOrderTotal.toFixed(2)}`;
+            if (discountPercent > 0) {
+                confirmMsg += `\nDiscount (${discountPercent}%): -₱${discountAmount.toFixed(2)}`;
+            }
+            confirmMsg += `\nFinal Total: ₱${currentOrderTotal.toFixed(2)}`;
+            
+            if (confirm(confirmMsg)) {
+                processPaymentAPI(currentOrderId, selectedPaymentMethod, currentOrderTotal, 0, discountPercent, discountAmount, currentOrderTotal);
             }
         }
     }
 
-    function processPaymentAPI(orderId, method, received, change) {
+    function processPaymentAPI(orderId, method, received, change, discountPercent, discountAmount, finalAmount) {
         fetch('api/process_payment.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -884,14 +987,28 @@ $imgBase = $basePath ? $basePath . '/' : '';
                 order_id: orderId,
                 payment_method: method,
                 amount_received: received,
-                change: change
+                change: change,
+                discount_percent: discountPercent,
+                discount_amount: discountAmount,
+                final_amount: finalAmount
             })
         })
         .then(r => r.json())
         .then(data => {
             if (data.success) {
                 closePaymentModal();
-                alert(`Payment processed successfully!\n\nPayment Method: ${method.toUpperCase()}${method === 'cash' ? '\nChange: ₱' + change.toFixed(2) : ''}`);
+                let successMsg = `Payment processed successfully!\n\nPayment Method: ${method.toUpperCase()}`;
+                if (discountPercent > 0) {
+                    successMsg += `\nDiscount Applied: ${discountPercent}% (-₱${discountAmount.toFixed(2)})`;
+                }
+                successMsg += `\nFinal Amount: ₱${finalAmount.toFixed(2)}`;
+                if (method === 'cash') {
+                    successMsg += `\nChange: ₱${change.toFixed(2)}`;
+                }
+                if (data.paymongo_payment_id) {
+                    successMsg += `\n\nPayMongo Payment ID: ${data.paymongo_payment_id}`;
+                }
+                alert(successMsg);
                 location.reload();
             } else {
                 alert('Error: ' + (data.error || 'Failed to process payment'));

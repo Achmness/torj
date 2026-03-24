@@ -82,14 +82,10 @@ $imgBase = $basePath ? $basePath . '/' : '';
         }
         
         .tab-btn:hover {
-            background: #AA7B39;
+            background: rgba(255,255,255,0.1);
         }
         
         .tab-btn.active {
-            background: #3d2d00;
-        }
-
-        .tab-btn.active:hover{
             background: #AA7B39;
         }
         
@@ -286,10 +282,10 @@ $imgBase = $basePath ? $basePath . '/' : '';
             inset: 0;
             background: rgba(0,0,0,0.7);
             z-index: 9999;
+            align-items: flex-start;
             justify-content: center;
-            align-items: center;
-            margin-bottom: 3px;
-            margin-top: 0px;
+            overflow-y: auto;
+            padding: 20px 0;
         }
         
         .payment-modal.open {
@@ -298,40 +294,36 @@ $imgBase = $basePath ? $basePath . '/' : '';
         
         .payment-modal-content {
             background: white;
-            padding: 30px;
+            padding: 25px;
             border-radius: 12px;
-            max-width: 600px;
+            max-width: 550px;
             width: 90%;
-            max-height: 90vh;
-            overflow-y: auto;
+            margin: auto;
         }
         
         .payment-modal-content h3 {
             color: #3d2d00;
-            margin-bottom: 5px;
-            margin-top: 0px;
-            font-size: 1.5rem;
+            margin: 0 0 15px 0;
+            font-size: 1.4rem;
         }
         
         .payment-method-btns {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin: 20px 0;
+            gap: 12px;
+            margin: 15px 0;
         }
         
         .payment-method-btn {
-            padding: 20px;
+            padding: 18px;
             background: #f9f9f9;
             border: 3px solid #ddd;
             border-radius: 10px;
             cursor: pointer;
             text-align: center;
-            margin-top: 0px;
-            margin-bottom: 0px;
             transition: all 0.3s;
             font-weight: bold;
-            font-size: 1.1rem;
+            font-size: 1rem;
         }
         
         .payment-method-btn:hover {
@@ -346,15 +338,44 @@ $imgBase = $basePath ? $basePath . '/' : '';
         
         .payment-method-btn i {
             display: block;
-            font-size: 2rem;
-            margin-bottom: 10px;
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+            color: #3d2d00;
+        }
+        
+        .online-method-btn {
+            padding: 12px;
+            background: #f9f9f9;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        .online-method-btn:hover {
+            border-color: #ECB212;
+            background: #fff;
+        }
+        
+        .online-method-btn.selected {
+            border-color: #ECB212;
+            background: #fffbf0;
+        }
+        
+        .online-method-btn i {
+            display: block;
+            font-size: 1.5rem;
+            margin-bottom: 5px;
             color: #3d2d00;
         }
         
         .cash-payment-section {
             display: none;
-            margin: 20px 0;
-            padding: 20px;
+            margin: 15px 0;
+            padding: 15px;
             background: #f9f9f9;
             border-radius: 10px;
         }
@@ -363,43 +384,8 @@ $imgBase = $basePath ? $basePath . '/' : '';
             display: block;
         }
         
-        .online-payment-section {
-            display: none;
-            margin: 20px 0;
-            padding: 20px;
-            background: #f9f9f9;
-            border-radius: 10px;
-            text-align: center;
-        }
-        
-        .online-payment-section.active {
-            display: block;
-        }
-        
-        .qr-code-container {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            margin: 15px 0;
-            border: 2px solid #ECB212;
-        }
-        
-        .qr-code-container img {
-            max-width: 250px;
-            width: 100%;
-            height: auto;
-            border-radius: 8px;
-        }
-        
-        .qr-code-container p {
-            margin: 10px 0 0 0;
-            color: #3d2d00;
-            font-weight: bold;
-            font-size: 1.1rem;
-        }
-        
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 12px;
         }
         
         .form-group label {
@@ -411,39 +397,39 @@ $imgBase = $basePath ? $basePath . '/' : '';
         
         .form-group input {
             width: 100%;
-            padding: 12px;
+            padding: 10px;
             border: 2px solid #ECB212;
             border-radius: 8px;
-            font-size: 1.1rem;
+            font-size: 1rem;
             box-sizing: border-box;
         }
         
         .change-display {
-            color: #3d2d00;
-            padding: 5px;
+            background: #3d2d00;
+            color: #ECB212;
+            padding: 15px;
             border-radius: 10px;
-            text-align: left;
-            margin-top: 15px;
-            margin-bottom: 0px;
-            font-size: 1.5rem;
+            text-align: center;
+            margin-top: 12px;
+            font-size: 1.3rem;
             font-weight: bold;
         }
         
         .modal-buttons {
             display: flex;
             gap: 10px;
-            margin-top: 20px;
+            margin-top: 15px;
         }
         
         .btn-confirm {
             flex: 1;
-            padding: 15px;
+            padding: 12px;
             background: #3d2d00;
             color: white;
             border: none;
             border-radius: 8px;
             font-weight: bold;
-            font-size: 1.1rem;
+            font-size: 1rem;
             cursor: pointer;
             transition: all 0.3s;
         }
@@ -460,13 +446,13 @@ $imgBase = $basePath ? $basePath . '/' : '';
         
         .btn-cancel {
             flex: 1;
-            padding: 15px;
+            padding: 12px;
             background: #95a5a6;
             color: white;
             border: none;
             border-radius: 8px;
             font-weight: bold;
-            font-size: 1.1rem;
+            font-size: 1rem;
             cursor: pointer;
             transition: all 0.3s;
         }
@@ -476,18 +462,18 @@ $imgBase = $basePath ? $basePath . '/' : '';
         }
     </style>
 </head>
-<body style="padding-top: 30px;">
+<body>
     <!-- Tab Navigation -->
     <div class="tab-navigation">
-        <a href="admin.php" class="back-to-dashboard">
-            <i class="fas fa-arrow-left"></i> Back
-        </a>
         <button class="tab-btn active" onclick="switchTab('neworder')">
             <i class="fas fa-shopping-cart"></i> New Order
         </button>
         <button class="tab-btn" onclick="switchTab('payment')">
             <i class="fas fa-cash-register"></i> Process Payment
         </button>
+        <a href="admin.php" class="back-to-dashboard">
+            <i class="fas fa-arrow-left"></i> Back
+        </a>
     </div>
 
     <div class="container">
@@ -554,7 +540,7 @@ $imgBase = $basePath ? $basePath . '/' : '';
             </div>
         </div>
 
-  
+        <!-- PAYMENT PROCESSING TAB -->
         <div id="payment-tab" class="tab-content">
             <div class="payment-section">
                 <h2><i class="fas fa-cash-register"></i> Pending Payments</h2>
@@ -612,22 +598,22 @@ $imgBase = $basePath ? $basePath . '/' : '';
         <div class="payment-modal-content">
             <h3><i class="fas fa-cash-register"></i> Process Payment</h3>
             
-            <div style="background: #f9f9f9; padding: 15px; border-radius: 8px; margin-bottom: 0px; margin-top: 0px;">
-                <p style="margin-top: 0px; margin-bottom: 0px;"><strong>Order #<span id="modalOrderId"></span></strong></p>
-                <p style="margin-top: 0px; margin-bottom: 0px;"><strong>Customer:</strong> <span id="modalCustomerName"></span></p>
-                <p style="font-size: 1.2rem; color: #666; margin-top: 0px; margin-bottom: 0px;"><strong>Original Total: ₱<span id="modalOriginalTotal"></span></strong></p>
-                <div style="margin-top: 15px; padding: 15px; background: #fff; border-radius: 8px; border: 2px solid #ECB212;">
-                    <label style="display: block; margin-bottom: 8px; font-weight: bold; color: #3d2d00;">Discount (%):</label>
-                    <input type="number" id="discountPercent" placeholder="Enter discount %" min="0" max="100" step="0.01" value="0" style="width: 95%; padding: 10px; border: 2px solid #E8E0D5; border-radius: 8px; font-size: 1rem;">
-                    <p style="font-size: 0.9rem; color: #666; margin-top: 3px; margin-bottom: 0px;">Discount Amount: ₱<span id="discountAmount">0.00</span></p>
+            <div style="background: #f9f9f9; padding: 12px; border-radius: 8px; margin-bottom: 12px;">
+                <p style="margin: 3px 0;"><strong>Order #<span id="modalOrderId"></span></strong></p>
+                <p style="margin: 3px 0;"><strong>Customer:</strong> <span id="modalCustomerName"></span></p>
+                <p style="font-size: 1.1rem; color: #666; margin: 5px 0;"><strong>Original Total: ₱<span id="modalOriginalTotal"></span></strong></p>
+                <div style="margin-top: 10px; padding: 12px; background: #fff; border-radius: 8px; border: 2px solid #ECB212;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: bold; color: #3d2d00; font-size: 0.9rem;">Discount (%):</label>
+                    <input type="number" id="discountPercent" placeholder="Enter discount %" min="0" max="100" step="0.01" value="0" style="width: 100%; padding: 8px; border: 2px solid #E8E0D5; border-radius: 8px; font-size: 0.95rem; box-sizing: border-box;">
+                    <p style="font-size: 0.85rem; color: #666; margin: 5px 0 0 0;">Discount Amount: ₱<span id="discountAmount">0.00</span></p>
                 </div>
-                <p style="font-size: 1.5rem; color: #3d2d00; margin-top: 3px; margin-bottom: 0px; font-weight: bold;"><strong>Final Total: ₱<span id="modalTotal"></span></strong></p>
+                <p style="font-size: 1.3rem; color: #3d2d00; margin: 8px 0 0 0; font-weight: bold;"><strong>Final Total: ₱<span id="modalTotal"></span></strong></p>
             </div>
             
-            <h4 style="margin-bottom: 0px; margin-top: 0px; color: #3d2d00;">Select Payment Method:</h4>
+            <h4 style="margin: 12px 0 8px 0; color: #3d2d00; font-size: 1.1rem;">Select Payment Method:</h4>
             
             <div class="payment-method-btns">
-                <div     class="payment-method-btn" onclick="selectPaymentMethod('cash')">
+                <div class="payment-method-btn" onclick="selectPaymentMethod('cash')">
                     <i class="fas fa-money-bill-wave"></i>
                     Cash
                 </div>
@@ -635,6 +621,25 @@ $imgBase = $basePath ? $basePath . '/' : '';
                     <i class="fas fa-credit-card"></i>
                     Online/Card
                 </div>
+            </div>
+            
+            <div id="onlinePaymentSection" class="cash-payment-section">
+                <h4 style="margin: 0 0 10px 0; color: #3d2d00; font-size: 1rem;">Choose Online Payment:</h4>
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 10px;">
+                    <div class="online-method-btn" onclick="selectOnlineMethod('card')">
+                        <i class="fas fa-credit-card"></i>
+                        <span>Card</span>
+                    </div>
+                    <div class="online-method-btn" onclick="selectOnlineMethod('gcash')">
+                        <i class="fas fa-mobile-alt"></i>
+                        <span>GCash</span>
+                    </div>
+                    <div class="online-method-btn" onclick="selectOnlineMethod('paymaya')">
+                        <i class="fas fa-wallet"></i>
+                        <span>PayMaya</span>
+                    </div>
+                </div>
+                <input type="hidden" id="selectedOnlineMethod" value="">
             </div>
             
             <div id="cashPaymentSection" class="cash-payment-section">
@@ -646,15 +651,6 @@ $imgBase = $basePath ? $basePath . '/' : '';
                 <div class="change-display" id="changeDisplay">
                     Change: ₱0.00
                 </div>
-            </div>
-            
-            <div id="onlinePaymentSection" class="online-payment-section">
-                <h4 style="color: #3d2d00; margin-top: 0;">Scan GCash QR Code</h4>
-                <div class="qr-code-container">
-                    <img src="ggg.jpg" alt="GCash QR Code">
-                    <p>Scan to Pay via GCash</p>
-                </div>
-                <p style="color: #666; font-size: 0.9rem;">After payment, click Confirm Payment below</p>
             </div>
             
             <div class="modal-buttons">
@@ -672,7 +668,7 @@ $imgBase = $basePath ? $basePath . '/' : '';
         <div class="order-modal-content">
             <h3>Place Order</h3>
             <form id="placeOrderForm">
-                <label>Customer Name <input type="text" id="customerName" placeholder="Name" required></label>
+                <label>Customer Name <input type="text" id="customerName" placeholder="e.g. Walk-in" required></label>
                 <label>Table Number <input type="text" id="tableNum" placeholder="e.g. 1" value="1"></label>
                 <div class="modal-btns">
                     <button type="submit" class="checkout-btn">Confirm Order</button>
@@ -694,338 +690,6 @@ $imgBase = $basePath ? $basePath . '/' : '';
     .checkout-btn { cursor:pointer; }
     </style>
 
-    <script>
-    // Tab Switching
-    function switchTab(tabName) {
-        document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-        
-        document.getElementById(tabName + '-tab').classList.add('active');
-        event.target.classList.add('active');
-    }
-
-    const receiptContainer = document.getElementById('receipt-items');
-    const totalDisplay = document.getElementById('grand-total');
-    const timestampDisplay = document.getElementById('timestamp');
-    let cart = {};
-    let currentCategory = 'hot';
-
-    document.querySelectorAll('.prod .nav-item').forEach(el => {
-        el.addEventListener('click', function() {
-            document.querySelectorAll('.prod .nav-item').forEach(n => n.classList.remove('active'));
-            this.classList.add('active');
-            currentCategory = this.dataset.cat;
-            document.querySelectorAll('.product-card').forEach(card => {
-                card.style.display = card.dataset.category === currentCategory ? '' : 'none';
-            });
-        });
-    });
-
-    document.querySelectorAll('.product-card').forEach(card => {
-        const cat = card.dataset.category;
-        if (cat !== 'hot') card.style.display = 'none';
-    });
-
-    function updateReceipt() {
-        receiptContainer.innerHTML = '';
-        let total = 0, count = 0;
-        Object.keys(cart).forEach(name => {
-            if (cart[name].qty > 0) {
-                count++;
-                const itemTotal = cart[name].qty * cart[name].price;
-                total += itemTotal;
-                const row = document.createElement('div');
-                row.className = 'receipt-row';
-                row.innerHTML = `<span>${name} x${cart[name].qty}</span><span>₱${itemTotal.toFixed(2)}</span>`;
-                receiptContainer.appendChild(row);
-            }
-        });
-        if (count === 0) {
-            receiptContainer.innerHTML = '<p class="empty-msg">Select items to begin...</p>';
-            timestampDisplay.innerText = "No order active";
-        } else {
-            timestampDisplay.innerText = "Date: " + new Date().toLocaleString();
-        }
-        totalDisplay.innerText = `TOTAL: ₱${total.toFixed(2)}`;
-    }
-
-    document.querySelectorAll('.product-card').forEach(card => {
-        const name = card.getAttribute('data-name');
-        const price = parseFloat(card.getAttribute('data-price'));
-        const qtyDisplay = card.querySelector('.qty-number');
-        card.querySelector('.plus').addEventListener('click', () => {
-            if (!cart[name]) cart[name] = { price, qty: 0 };
-            cart[name].qty++;
-            qtyDisplay.innerText = cart[name].qty;
-            updateReceipt();
-        });
-        card.querySelector('.minus').addEventListener('click', () => {
-            if (cart[name] && cart[name].qty > 0) {
-                cart[name].qty--;
-                qtyDisplay.innerText = cart[name].qty;
-                updateReceipt();
-            }
-        });
-    });
-
-    document.getElementById("placeOrderBtn").addEventListener("click", function () {
-        let count = 0;
-        Object.keys(cart).forEach(name => { if (cart[name].qty > 0) count++; });
-        if (count === 0) { alert("No items in order."); return; }
-        document.getElementById("placeOrderModal").classList.add("open");
-    });
-
-    document.getElementById("placeOrderForm").addEventListener("submit", function (e) {
-        e.preventDefault();
-        const items = [];
-        Object.keys(cart).forEach(name => {
-            if (cart[name].qty > 0) items.push({ name: name, price: cart[name].price, qty: cart[name].qty });
-        });
-        fetch("api/save_order.php", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                customer_name: document.getElementById("customerName").value || "Walk-in",
-                table_num: document.getElementById("tableNum").value || "1",
-                items: items
-            })
-        })
-        .then(r => r.json())
-        .then(d => {
-            if (d.success) {
-                closePlaceOrderModal();
-                cart = {};
-                document.querySelectorAll(".qty-number").forEach(el => el.innerText = "0");
-                updateReceipt();
-                alert("Order #" + d.order_id + " placed successfully!");
-                location.reload();
-            } else {
-                alert(d.error || "Failed to place order");
-            }
-        })
-        .catch(err => {
-            console.error(err);
-            alert("Failed to place order. Please try again.");
-        });
-    });
-
-    function closePlaceOrderModal() { document.getElementById("placeOrderModal").classList.remove("open"); }
-    document.getElementById("placeOrderModal").addEventListener("click", function(e) { if (e.target === this) closePlaceOrderModal(); });
-
-    document.getElementById("printBtn").addEventListener("click", function () {
-        let count = 0;
-        Object.keys(cart).forEach(name => { if (cart[name].qty > 0) count++; });
-        if (count === 0) { alert("No items in order."); return; }
-        let receiptContent = `<h2>The Debug Café</h2><p>${new Date().toLocaleString()}</p><hr>`;
-        let total = 0;
-        Object.keys(cart).forEach(name => {
-            if (cart[name].qty > 0) {
-                let itemTotal = cart[name].qty * cart[name].price;
-                total += itemTotal;
-                receiptContent += `<p>${name} x${cart[name].qty} — ₱${itemTotal.toFixed(2)}</p>`;
-            }
-        });
-        receiptContent += `<hr><h3>Total: ₱${total.toFixed(2)}</h3><p>Thank you for visiting!</p>`;
-        let printWindow = window.open('', '', 'width=400,height=600');
-        printWindow.document.write(`<html><head><title>Receipt</title><style>body{font-family:monospace;padding:20px;text-align:center;}hr{border:1px dashed black;}</style></head><body>${receiptContent}</body></html>`);
-        printWindow.document.close();
-        printWindow.print();
-    });
-
-    // PAYMENT PROCESSING LOGIC
-    let currentOrderId = null;
-    let currentOrderTotal = 0;
-    let originalOrderTotal = 0;
-    let selectedPaymentMethod = null;
-
-    function openPaymentModal(orderId, customerName, total) {
-        currentOrderId = orderId;
-        currentOrderTotal = total;
-        originalOrderTotal = total;
-        selectedPaymentMethod = null;
-        
-        document.getElementById('modalOrderId').textContent = orderId;
-        document.getElementById('modalCustomerName').textContent = customerName;
-        document.getElementById('modalOriginalTotal').textContent = total.toFixed(2);
-        document.getElementById('modalTotal').textContent = total.toFixed(2);
-        
-        // Reset form
-        document.getElementById('discountPercent').value = '0';
-        document.getElementById('discountAmount').textContent = '0.00';
-        document.getElementById('cashReceived').value = '';
-        document.getElementById('changeDisplay').textContent = 'Change: ₱0.00';
-        document.getElementById('cashPaymentSection').classList.remove('active');
-        document.getElementById('onlinePaymentSection').classList.remove('active');
-        document.getElementById('confirmPaymentBtn').disabled = true;
-        
-        // Remove selected class from all payment methods
-        document.querySelectorAll('.payment-method-btn').forEach(btn => {
-            btn.classList.remove('selected');
-        });
-        
-        document.getElementById('paymentModal').classList.add('open');
-    }
-
-    function closePaymentModal() {
-        document.getElementById('paymentModal').classList.remove('open');
-        currentOrderId = null;
-        currentOrderTotal = 0;
-        originalOrderTotal = 0;
-        selectedPaymentMethod = null;
-    }
-
-    // Calculate discount
-    document.getElementById('discountPercent').addEventListener('input', function() {
-        const discountPercent = parseFloat(this.value) || 0;
-        const discountAmount = (originalOrderTotal * discountPercent) / 100;
-        const finalTotal = originalOrderTotal - discountAmount;
-        
-        currentOrderTotal = finalTotal;
-        document.getElementById('discountAmount').textContent = discountAmount.toFixed(2);
-        document.getElementById('modalTotal').textContent = finalTotal.toFixed(2);
-        
-        // Recalculate change if cash payment is active
-        if (selectedPaymentMethod === 'cash') {
-            const received = parseFloat(document.getElementById('cashReceived').value) || 0;
-            const change = received - currentOrderTotal;
-            
-            if (change >= 0) {
-                document.getElementById('changeDisplay').textContent = `Change: ₱${change.toFixed(2)}`;
-                document.getElementById('changeDisplay').style.background = '#3d2d00';
-                document.getElementById('changeDisplay').style.color = '#ECB212';
-                document.getElementById('confirmPaymentBtn').disabled = false;
-            } else {
-                document.getElementById('changeDisplay').textContent = `Insufficient: ₱${Math.abs(change).toFixed(2)} more needed`;
-                document.getElementById('changeDisplay').style.background = '#e74c3c';
-                document.getElementById('changeDisplay').style.color = 'white';
-                document.getElementById('confirmPaymentBtn').disabled = true;
-            }
-        }
-    });
-
-    function selectPaymentMethod(method) {
-        selectedPaymentMethod = method;
-        
-        // Update UI
-        document.querySelectorAll('.payment-method-btn').forEach(btn => {
-            btn.classList.remove('selected');
-        });
-        event.target.closest('.payment-method-btn').classList.add('selected');
-        
-        if (method === 'cash') {
-            document.getElementById('cashPaymentSection').classList.add('active');
-            document.getElementById('onlinePaymentSection').classList.remove('active');
-            document.getElementById('confirmPaymentBtn').disabled = true;
-        } else {
-            document.getElementById('cashPaymentSection').classList.remove('active');
-            document.getElementById('onlinePaymentSection').classList.add('active');
-            document.getElementById('confirmPaymentBtn').disabled = false;
-        }
-    }
-
-    // Calculate change for cash payment
-    document.getElementById('cashReceived').addEventListener('input', function() {
-        const received = parseFloat(this.value) || 0;
-        const change = received - currentOrderTotal;
-        
-        if (change >= 0) {
-            document.getElementById('changeDisplay').textContent = `Change: ₱${change.toFixed(2)}`;
-            document.getElementById('changeDisplay').style.background = '#3d2d00';
-            document.getElementById('changeDisplay').style.color = '#ECB212';
-            document.getElementById('confirmPaymentBtn').disabled = false;
-        } else {
-            document.getElementById('changeDisplay').textContent = `Insufficient: ₱${Math.abs(change).toFixed(2)} more needed`;
-            document.getElementById('changeDisplay').style.background = '#e74c3c';
-            document.getElementById('changeDisplay').style.color = 'white';
-            document.getElementById('confirmPaymentBtn').disabled = true;
-        }
-    });
-
-    function confirmPayment() {
-        if (!currentOrderId || !selectedPaymentMethod) {
-            alert('Please select a payment method');
-            return;
-        }
-        
-        const discountPercent = parseFloat(document.getElementById('discountPercent').value) || 0;
-        const discountAmount = (originalOrderTotal * discountPercent) / 100;
-        
-        if (selectedPaymentMethod === 'cash') {
-            const received = parseFloat(document.getElementById('cashReceived').value) || 0;
-            const change = received - currentOrderTotal;
-            
-            if (change < 0) {
-                alert('Insufficient payment amount');
-                return;
-            }
-            
-            let confirmMsg = `Confirm Cash Payment?\n\nOriginal Total: ₱${originalOrderTotal.toFixed(2)}`;
-            if (discountPercent > 0) {
-                confirmMsg += `\nDiscount (${discountPercent}%): -₱${discountAmount.toFixed(2)}`;
-            }
-            confirmMsg += `\nFinal Total: ₱${currentOrderTotal.toFixed(2)}\nReceived: ₱${received.toFixed(2)}\nChange: ₱${change.toFixed(2)}`;
-            
-            if (confirm(confirmMsg)) {
-                processPaymentAPI(currentOrderId, selectedPaymentMethod, received, change, discountPercent, discountAmount, currentOrderTotal);
-            }
-        } else {
-            let confirmMsg = `Confirm Online/Card Payment?\n\nOriginal Total: ₱${originalOrderTotal.toFixed(2)}`;
-            if (discountPercent > 0) {
-                confirmMsg += `\nDiscount (${discountPercent}%): -₱${discountAmount.toFixed(2)}`;
-            }
-            confirmMsg += `\nFinal Total: ₱${currentOrderTotal.toFixed(2)}`;
-            
-            if (confirm(confirmMsg)) {
-                processPaymentAPI(currentOrderId, selectedPaymentMethod, currentOrderTotal, 0, discountPercent, discountAmount, currentOrderTotal);
-            }
-        }
-    }
-
-    function processPaymentAPI(orderId, method, received, change, discountPercent, discountAmount, finalAmount) {
-        fetch('api/process_payment.php', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 
-                order_id: orderId,
-                payment_method: method,
-                amount_received: received,
-                change: change,
-                discount_percent: discountPercent,
-                discount_amount: discountAmount,
-                final_amount: finalAmount
-            })
-        })
-        .then(r => r.json())
-        .then(data => {
-            if (data.success) {
-                closePaymentModal();
-                let successMsg = `Payment processed successfully!\n\nPayment Method: ${method.toUpperCase()}`;
-                if (discountPercent > 0) {
-                    successMsg += `\nDiscount Applied: ${discountPercent}% (-₱${discountAmount.toFixed(2)})`;
-                }
-                successMsg += `\nFinal Amount: ₱${finalAmount.toFixed(2)}`;
-                if (method === 'cash') {
-                    successMsg += `\nChange: ₱${change.toFixed(2)}`;
-                }
-                if (data.paymongo_payment_id) {
-                    successMsg += `\n\nPayMongo Payment ID: ${data.paymongo_payment_id}`;
-                }
-                alert(successMsg);
-                location.reload();
-            } else {
-                alert('Error: ' + (data.error || 'Failed to process payment'));
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Failed to process payment');
-        });
-    }
-
-    // Close modal when clicking outside
-    document.getElementById('paymentModal').addEventListener('click', function(e) {
-        if (e.target === this) closePaymentModal();
-    });
-    </script>
+    <script src="neworder_script.js"></script>
 </body>
 </html>

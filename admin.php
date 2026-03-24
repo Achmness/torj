@@ -93,14 +93,14 @@ if ($r) while ($row = mysqli_fetch_assoc($r)) $mock_orders[] = $row;
                 <p class="summary-value"><?php echo (int)$orders_today; ?> Orders</p>
                 <p class="summary-label">ORDERS TODAY</p>
             </div>
-            <div class="summary-card summary-card-badge">
+            <a href="orders.php?filter=pending" class="summary-card summary-card-badge" style="text-decoration: none; color: inherit; cursor: pointer;">
                 <div class="icon-wrapper">
                     <i class="fas fa-bell"></i>
                     <span class="badge"><?php echo (int)$pending_count; ?></span>
                 </div>
                 <p class="summary-value"><?php echo (int)$pending_count; ?> Pending</p>
                 <p class="summary-label">PENDING ORDERS</p>
-            </div>
+            </a>
         </section>
 
         <!-- Action Tiles -->

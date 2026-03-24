@@ -46,6 +46,9 @@ $imgBase = $basePath ? $basePath . '/' : '';
             transition: all 0.3s;
             font-size: 0.9rem;
             font-weight: 600;
+            padding-top: 0px;
+
+
         }
         
         .back-to-home:hover {
@@ -148,6 +151,12 @@ $imgBase = $basePath ? $basePath . '/' : '';
             color: #666;
             margin: 15px 0;
             font-size: 0.95rem;
+        }
+
+        .back-to{
+            display: flex;
+            align-items: start;
+            
         }
         
         /* Print Styles - Fit to bond paper */
@@ -254,11 +263,13 @@ $imgBase = $basePath ? $basePath . '/' : '';
     </style>
 
 </head>
-<body>
+<body style="padding-top: 30px;">
+    <div class="backto">
     <a href="index.php" class="back-to-home">
         <i class="fas fa-arrow-left"></i>
         <span>Back to Home</span>
     </a>
+    </div>
     
     <div class="neworder-main">
         <div class="outer">
