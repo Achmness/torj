@@ -2,7 +2,7 @@
 session_start();
 header('Content-Type: application/json');
 
-include __DIR__ . '/../db.php';
+include __DIR__ . '/../php/db.php';
 
 $input = json_decode(file_get_contents('php://input'), true);
 if (!$input || empty($input['items']) || !is_array($input['items'])) {

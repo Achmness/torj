@@ -7,7 +7,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] != 'barista') {
     exit();
 }
 
-include "../db.php";
+include __DIR__ . '/../php/db.php';
 
 $data = json_decode(file_get_contents('php://input'), true);
 

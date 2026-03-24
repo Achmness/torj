@@ -27,13 +27,14 @@ foreach ($transactions as $t) $total_earnings += (float)$t['total'];
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Transactions - Debug Café</title>
-    <link rel="stylesheet" href="admin.css">
+    <link rel="stylesheet" href="../style/admin.css">
+    <link rel="stylesheet" href="../style/transactions.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
     <aside class="sidebar">
         <div class="sidebar-header">
-            <img src="logo.png" alt="Debug Café" class="sidebar-logo">
+            <img src="../logo.png" alt="Debug Café" class="sidebar-logo">
             <h1 class="sidebar-brand">Debug Café</h1>
             <p class="sidebar-tagline">Coffee & Code</p>
         </div>

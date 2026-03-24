@@ -30,7 +30,7 @@ if ($orders_result) {
     }
 }
 
-$upload_dir = __DIR__ . '/uploads/products/';
+$upload_dir = __DIR__ . '/../uploads/products/';
 $basePath = rtrim(dirname($_SERVER['SCRIPT_NAME'] ?? ''), '/\\');
 $basePath = ($basePath === '' || $basePath === '.') ? '' : $basePath;
 $imgBase = $basePath ? $basePath . '/' : '';
@@ -40,7 +40,7 @@ $imgBase = $basePath ? $basePath . '/' : '';
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="../style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <title>New Order - Debug Café</title>
     <style>
@@ -485,7 +485,7 @@ $imgBase = $basePath ? $basePath . '/' : '';
             <div class="inner-1">
                 <div class="innerimage">
                     
-                    <img src="logo.png" class="imagecafe" alt="Logo">
+                    <img src="../logo.png" class="imagecafe" alt="Logo">
 
                     <p class="nav-header">PRODUCTS</p>
                     <div class="prod">
@@ -507,7 +507,7 @@ $imgBase = $basePath ? $basePath . '/' : '';
                         $price = (float)($p['price'] ?? 0);
                         $cat = $p['category'] ?? 'hot';
                         $img = !empty($p['image']) && file_exists($upload_dir . $p['image'])
-                            ? $imgBase . 'uploads/products/' . htmlspecialchars($p['image'])
+                            ? $imgBase . '../uploads/products/' . htmlspecialchars($p['image'])
                             : 'logo.png';
                         $idx++;
                     ?>

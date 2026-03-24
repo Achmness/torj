@@ -1,19 +1,20 @@
 <?php
 session_start();
 
-if (!isset($_SESSION['role']) || ($_SESSION['role'] != 'cashier' && $_SESSION['role'] != 'admin')) {
+if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
     exit();
 }
 
 include "db.php";
 
-$fullname = isset($_SESSION['fullname']) ? htmlspecialchars($_SESSION['fullname']) : 'Cashier';
+$fullname = isset($_SESSION['fullname']) ? htmlspecialchars($_SESSION['fullname']) : 'Admin';
 
 $products = [];
 $r = mysqli_query($conn, "SELECT * FROM products ORDER BY category, name");
 if ($r) while ($row = mysqli_fetch_assoc($r)) $products[] = $row;
 
+// Get pending/unpaid orders for payment processing
 $pending_orders = [];
 $orders_query = "SELECT o.*, 
     (SELECT GROUP_CONCAT(CONCAT(oi.product_name, ' x', oi.quantity) SEPARATOR ', ') 
@@ -29,7 +30,7 @@ if ($orders_result) {
     }
 }
 
-$upload_dir = __DIR__ . '/uploads/products/';
+$upload_dir = __DIR__ . '/../uploads/products/';
 $basePath = rtrim(dirname($_SERVER['SCRIPT_NAME'] ?? ''), '/\\');
 $basePath = ($basePath === '' || $basePath === '.') ? '' : $basePath;
 $imgBase = $basePath ? $basePath . '/' : '';
@@ -39,529 +40,87 @@ $imgBase = $basePath ? $basePath . '/' : '';
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="../style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <title>Cashier - Debug Café</title>
-    <style>
-        body { margin: 0; padding: 0; background: rgb(136, 136, 131); }
-        
-        .cashier-container {
-            display: flex;
-            min-height: 100vh;
-            padding: 20px;
-            gap: 20px;
-        }
-        
-        /* Tab Navigation */
-        .tab-navigation {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            z-index: 100;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            width: 200px;
-        }
-        
-        .tab-btn {
-            padding: 15px 20px;
-            background: #3d2d00;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: all 0.3s;
-            text-align: left;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .tab-btn:hover {
-            background: #ECB212;
-            color: #3d2d00;
-        }
-        
-        .tab-btn.active {
-            background: #ECB212;
-            color: #3d2d00;
-        }
-        
-        .logout-btn {
-            padding: 15px 20px;
-            background: #e74c3c;
-            color: white;
-            text-decoration: none;
-            border-radius: 8px;
-            font-weight: bold;
-            text-align: left;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            transition: all 0.3s;
-        }
-        
-        .logout-btn:hover {
-            background: #c0392b;
-        }
-        
-        /* Tab Content */
-        .tab-content {
-            display: none;
-            width: 100%;
-            margin-top: 20px;
-            margin-left: 220px;
-        }
-        
-        .tab-content.active {
-            display: block;
-        }
-        
-        /* New Order Section (Same as neworder.php) */
-        .neworder-main { 
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-        }
-        
-        /* Payment Processing Section */
-        .payment-section {
-            max-width: 1400px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 15px;
-            padding: 30px;
-        }
-        
-        .payment-section h2 {
-            color: #3d2d00;
-            margin-bottom: 20px;
-            font-size: 2rem;
-        }
-        
-        .orders-grid {
-            display: grid;
-            gap: 15px;
-        }
-        
-        .order-card {
-            background: #f9f9f9;
-            border: 2px solid #ECB212;
-            border-radius: 10px;
-            padding: 20px;
-            display: grid;
-            grid-template-columns: auto 1fr auto;
-            gap: 20px;
-            align-items: center;
-            transition: all 0.3s;
-        }
-        
-        .order-card:hover {
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            transform: translateY(-2px);
-        }
-        
-        .order-number {
-            font-size: 2rem;
-            font-weight: bold;
-            color: #ECB212;
-            background: #3d2d00;
-            padding: 15px 25px;
-            border-radius: 10px;
-            text-align: center;
-        }
-        
-        .order-details {
-            flex: 1;
-        }
-        
-        .order-details h3 {
-            margin: 0 0 10px 0;
-            color: #3d2d00;
-        }
-        
-        .order-details p {
-            margin: 5px 0;
-            color: #666;
-        }
-        
-        .order-items {
-            background: white;
-            padding: 10px;
-            border-radius: 5px;
-            margin-top: 10px;
-            font-size: 0.9rem;
-        }
-        
-        .order-actions {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        
-        .btn-process {
-            padding: 12px 30px;
-            background: #3d2d00;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 1rem;
-            transition: all 0.3s;
-        }
-        
-        .btn-process:hover {
-            background: #ECB212;
-            color: #3d2d00;
-            transform: translateY(-2px);
-        }
-        
-        .btn-view {
-            padding: 12px 30px;
-            background: #916c07;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            text-decoration: none;
-            text-align: center;
-            transition: all 0.3s;
-        }
-        
-        .btn-view:hover {
-            background: #6b5005;
-        }
-        
-        .no-orders {
-            text-align: center;
-            padding: 60px;
-            color: #999;
-            font-size: 1.2rem;
-        }
-        
-        .status-badge {
-            display: inline-block;
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: bold;
-            margin-left: 10px;
-        }
-        
-        .status-pending {
-            background: #f39c12;
-            color: white;
-        }
-        
-        .status-preparing {
-            background: #3498db;
-            color: white;
-        }
-        
-        .status-ready {
-            background: #27ae60;
-            color: white;
-        }
-        
-        .payment-badge {
-            background: #ECB212;
-            color: #3d2d00;
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: bold;
-        }
-        
-        /* Payment Modal */
-        .payment-modal {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.7);
-            z-index: 9999;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        .payment-modal.open {
-            display: flex;
-        }
-        
-        .payment-modal-content {
-            background: white;
-            padding: 30px;
-            border-radius: 12px;
-            max-width: 600px;
-            width: 90%;
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-        
-        .payment-modal-content h3 {
-            color: #3d2d00;
-            margin-bottom: 20px;
-            font-size: 1.5rem;
-        }
-        
-        .payment-method-btns {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin: 20px 0;
-        }
-        
-        .payment-method-btn {
-            padding: 20px;
-            background: #f9f9f9;
-            border: 3px solid #ddd;
-            border-radius: 10px;
-            cursor: pointer;
-            text-align: center;
-            transition: all 0.3s;
-            font-weight: bold;
-            font-size: 1.1rem;
-        }
-        
-        .payment-method-btn:hover {
-            border-color: #ECB212;
-            background: #fff;
-        }
-        
-        .payment-method-btn.selected {
-            border-color: #ECB212;
-            background: #fffbf0;
-        }
-        
-        .payment-method-btn i {
-            display: block;
-            font-size: 2rem;
-            margin-bottom: 10px;
-            color: #3d2d00;
-        }
-        
-        .cash-payment-section {
-            display: none;
-            margin: 20px 0;
-            padding: 20px;
-            background: #f9f9f9;
-            border-radius: 10px;
-        }
-        
-        .cash-payment-section.active {
-            display: block;
-        }
-        
-        .online-payment-section {
-            display: none;
-            margin: 20px 0;
-            padding: 20px;
-            background: #f9f9f9;
-            border-radius: 10px;
-            text-align: center;
-        }
-        
-        .online-payment-section.active {
-            display: block;
-        }
-        
-        .qr-code-container {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            margin: 15px 0;
-            border: 2px solid #ECB212;
-        }
-        
-        .qr-code-container img {
-            max-width: 250px;
-            width: 100%;
-            height: auto;
-            border-radius: 8px;
-        }
-        
-        .qr-code-container p {
-            margin: 10px 0 0 0;
-            color: #3d2d00;
-            font-weight: bold;
-            font-size: 1.1rem;
-        }
-        
-        .form-group {
-            margin-bottom: 15px;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-            color: #3d2d00;
-        }
-        
-        .form-group input {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #ECB212;
-            border-radius: 8px;
-            font-size: 1.1rem;
-            box-sizing: border-box;
-        }
-        
-        .change-display {
-            color: #3d2d00;
-            padding: 5px;
-            border-radius: 10px;
-            text-align: left;
-            margin-top: 15px;
-            margin-bottom: 0px;
-            font-size: 1.5rem;
-            font-weight: bold;
-        }
-        
-        .modal-buttons {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-        }
-        
-        .btn-confirm {
-            flex: 1;
-            padding: 15px;
-            background: #3d2d00;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-weight: bold;
-            font-size: 1.1rem;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .btn-confirm:hover {
-            background: #ECB212;
-            color: #3d2d00;
-        }
-        
-        .btn-confirm:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-        }
-        
-        .btn-cancel {
-            flex: 1;
-            padding: 15px;
-            background: #95a5a6;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-weight: bold;
-            font-size: 1.1rem;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .btn-cancel:hover {
-            background: #7f8c8d;
-        }
-    </style>
-</head>
-<body>
+    <link rel="stylesheet" href="../style/neworder.css">
+    <title>New Order - Debug Café</title>
 
+</head>
+<body style="padding-top: 30px;">
     <!-- Tab Navigation -->
     <div class="tab-navigation">
-        <button class="tab-btn active" onclick="switchTab('neworder')">
-            <i class="fas fa-shopping-cart"></i> New Order
-        </button>
-        <button class="tab-btn" onclick="switchTab('payment')">
-            <i class="fas fa-cash-register"></i> Process Payment
-        </button>
-        <a href="logout.php" class="logout-btn">
-            <i class="fas fa-sign-out-alt"></i> Logout
+        <a href="admin.php" class="back-to-dashboard">
+            <i class="fas fa-arrow-left"></i> Back
         </a>
+        <a href="neworder.php" class="tab-btn active"><i class="fas fa-shopping-cart"></i> New Order</a>
+        <a href="process_payment.php" class="tab-btn"><i class="fas fa-cash-register"></i> Process Payment</a>
     </div>
 
-    <div class="cashier-container">
+    <div class="container">
         
         <!-- NEW ORDER TAB -->
         <div id="neworder-tab" class="tab-content active">
             <div class="neworder-main">
                 <div class="outer">
-                    <div class="inner-1">
-                        <div class="innerimage">
-                            <img src="logo.png" class="imagecafe" alt="Logo">
-                            <p class="nav-header">PRODUCTS</p>
-                            <div class="prod">
-                                <p class="nav-item active" data-cat="hot">Hot Drinks</p>
-                                <p class="nav-item" data-cat="cold">Cold Drinks</p>
-                                <p class="nav-item" data-cat="bread">Bread and Pastries</p>
-                            </div>
-                        </div>
-                    </div>
+            <div class="inner-1">
+                <div class="innerimage">
+                    
+                    <img src="../logo.png" class="imagecafe" alt="Logo">
 
-                    <div class="inner-2">
-                        <div class="product-grid" id="productGrid">
-                            <?php
-                            $idx = 0;
-                            foreach ($products as $p):
-                                $pid = (int)($p['p_id'] ?? $p['id'] ?? 0);
-                                $name = htmlspecialchars($p['name'] ?? '');
-                                $price = (float)($p['price'] ?? 0);
-                                $cat = $p['category'] ?? 'hot';
-                                $img = !empty($p['image']) && file_exists($upload_dir . $p['image'])
-                                    ? $imgBase . 'uploads/products/' . htmlspecialchars($p['image'])
-                                    : 'logo.png';
-                                $idx++;
-                            ?>
-                            <div class="product-card" data-name="<?php echo $name; ?>" data-price="<?php echo $price; ?>" data-category="<?php echo htmlspecialchars($cat); ?>" style="--order: <?php echo $idx; ?>">
-                                <img src="<?php echo $img; ?>" alt="">
-                                <p class="product-name"><?php echo $name; ?></p>
-                                <p class="product-price">₱<?php echo number_format($price, 2); ?></p>
-                                <div class="quantity-controls">
-                                    <button class="qty-btn minus">-</button>
-                                    <span class="qty-number">0</span>
-                                    <button class="qty-btn plus">+</button>
-                                </div>
-                            </div>
-                            <?php endforeach; ?>
-                            <?php if (count($products) === 0): ?>
-                                <p style="grid-column:1/-1; text-align:center; padding:40px;">No products yet.</p>
-                            <?php endif; ?>
-                        </div>
+                    <p class="nav-header">PRODUCTS</p>
+                    <div class="prod">
+                        <p class="nav-item active" data-cat="hot">Hot Drinks</p>
+                        <p class="nav-item" data-cat="cold">Cold Drinks</p>
+                        <p class="nav-item" data-cat="bread">Bread and Pastries</p>
                     </div>
+                    
+                </div>
+            </div>
 
-                    <div class="inner-3">
-                        <p class="cart-text">CURRENT ORDER</p>
-                        <p id="timestamp" class="timestamp-text">No order active</p>
-                        
-                        <div style="margin: 15px 0;">
-                            <label style="display:block; margin-bottom:5px; font-weight:bold; color:#3d2d00;">Customer Name:</label>
-                            <input type="text" id="customerName" placeholder="e.g. Walk-in" style="width:100%; padding:8px; border:2px solid #ECB212; border-radius:6px;">
-                        </div>
-                        
-                        <div style="margin: 15px 0;">
-                            <label style="display:block; margin-bottom:5px; font-weight:bold; color:#3d2d00;">Table #:</label>
-                            <input type="text" id="tableNum" placeholder="Table number" value="1" style="width:100%; padding:8px; border:2px solid #ECB212; border-radius:6px;">
-                        </div>
-                        
-                        <div id="receipt-items" class="receipt-items-container">
-                            <p class="empty-msg">Select items to begin...</p>
-                        </div>
-                        
-                        <div class="receipt-footer">
-                            <p class="total-text" id="grand-total">TOTAL: ₱0.00</p>
-                            <button class="checkout-btn" id="placeOrderBtn">PLACE ORDER</button>
-                            <button class="checkout-btn" id="printBtn" style="margin-top:8px">PRINT RECEIPT</button>
-                        </div>
+            <div class="inner-2">
+                <div class="product-grid" id="productGrid">
+                    <?php
+                    $idx = 0;
+                    foreach ($products as $p):
+                        $pid = (int)($p['p_id'] ?? $p['id'] ?? 0);
+                        $name = htmlspecialchars($p['name'] ?? '');
+                        $price = (float)($p['price'] ?? 0);
+                        $cat = $p['category'] ?? 'hot';
+                        $img = !empty($p['image']) && file_exists($upload_dir . $p['image'])
+                            ? $imgBase . '../uploads/products/' . htmlspecialchars($p['image'])
+                            : 'logo.png';
+                        $idx++;
+                    ?>
+                    <div class="product-card" data-name="<?php echo $name; ?>" data-price="<?php echo $price; ?>" data-category="<?php echo htmlspecialchars($cat); ?>" style="--order: <?php echo $idx; ?>">
+                        <img src="<?php echo $img; ?>" alt="">
+                        <p class="product-name"><?php echo $name; ?></p>
+                        <p class="product-price">₱<?php echo number_format($price, 2); ?></p>
+                        <div class="quantity-controls"><button class="qty-btn minus">-</button><span class="qty-number">0</span><button class="qty-btn plus">+</button></div>
                     </div>
+                    <?php endforeach; ?>
+                    <?php if (count($products) === 0): ?>
+                        <p style="grid-column:1/-1; text-align:center; padding:40px;">No products yet. Add products in <a href="products.php">Manage Products</a>.</p>
+                    <?php endif; ?>
+                </div>
+            </div>
+
+            <div class="inner-3">
+                <p class="cart-text">CURRENT ORDER</p>
+                <p id="timestamp" class="timestamp-text">No order active</p>
+                <div id="receipt-items" class="receipt-items-container">
+                    <p class="empty-msg">Select items to begin...</p>
+                </div>
+                <div class="receipt-footer">
+                    <p class="total-text" id="grand-total">TOTAL: ₱0.00</p>
+                    <button class="checkout-btn" id="placeOrderBtn">PLACE ORDER</button>
+                    <button class="checkout-btn" id="printBtn" style="margin-top:8px">PRINT RECEIPT</button>
+                </div>
+            </div>
                 </div>
             </div>
         </div>
 
-        <!-- PAYMENT PROCESSING TAB -->
+  
         <div id="payment-tab" class="tab-content">
             <div class="payment-section">
                 <h2><i class="fas fa-cash-register"></i> Pending Payments</h2>
@@ -634,7 +193,7 @@ $imgBase = $basePath ? $basePath . '/' : '';
             <h4 style="margin-bottom: 0px; margin-top: 0px; color: #3d2d00;">Select Payment Method:</h4>
             
             <div class="payment-method-btns">
-                <div class="payment-method-btn" onclick="selectPaymentMethod('cash')">
+                <div     class="payment-method-btn" onclick="selectPaymentMethod('cash')">
                     <i class="fas fa-money-bill-wave"></i>
                     Cash
                 </div>
@@ -658,7 +217,7 @@ $imgBase = $basePath ? $basePath . '/' : '';
             <div id="onlinePaymentSection" class="online-payment-section">
                 <h4 style="color: #3d2d00; margin-top: 0;">Scan GCash QR Code</h4>
                 <div class="qr-code-container">
-                    <img src="gcash_qr.png" alt="GCash QR Code">
+                    <img src="ggg.jpg" alt="GCash QR Code">
                     <p>Scan to Pay via GCash</p>
                 </div>
                 <p style="color: #666; font-size: 0.9rem;">After payment, click Confirm Payment below</p>
@@ -675,6 +234,32 @@ $imgBase = $basePath ? $basePath . '/' : '';
         </div>
     </div>
 
+    <div id="placeOrderModal" class="order-modal">
+        <div class="order-modal-content">
+            <h3>Place Order</h3>
+            <form id="placeOrderForm">
+                <label>Customer Name <input type="text" id="customerName" placeholder="Name" required></label>
+                <label>Table Number <input type="text" id="tableNum" placeholder="e.g. 1" value="1"></label>
+                <div class="modal-btns">
+                    <button type="submit" class="checkout-btn">Confirm Order</button>
+                    <button type="button" class="btn-cancel-modal" onclick="closePlaceOrderModal()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <style>
+    .order-modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:999; justify-content:center; align-items:center; }
+    .order-modal.open { display:flex; }
+    .order-modal-content { background:white; padding:24px; border-radius:12px; min-width:320px; }
+    .order-modal-content h3 { margin:0 0 16px; }
+    .order-modal-content label { display:block; margin-bottom:12px; }
+    .order-modal-content input { width:100%; padding:10px; border:2px solid #E8E0D5; border-radius:8px; box-sizing:border-box; }
+    .modal-btns { display:flex; gap:10px; margin-top:16px; }
+    .btn-cancel-modal { padding:10px 20px; background:#95a5a6; color:white; border:none; border-radius:8px; cursor:pointer; }
+    .checkout-btn { cursor:pointer; }
+    </style>
+
     <script>
     // Tab Switching
     function switchTab(tabName) {
@@ -685,7 +270,6 @@ $imgBase = $basePath ? $basePath . '/' : '';
         event.target.classList.add('active');
     }
 
-    // NEW ORDER LOGIC (Same as neworder.php)
     const receiptContainer = document.getElementById('receipt-items');
     const totalDisplay = document.getElementById('grand-total');
     const timestampDisplay = document.getElementById('timestamp');
@@ -735,14 +319,12 @@ $imgBase = $basePath ? $basePath . '/' : '';
         const name = card.getAttribute('data-name');
         const price = parseFloat(card.getAttribute('data-price'));
         const qtyDisplay = card.querySelector('.qty-number');
-        
         card.querySelector('.plus').addEventListener('click', () => {
             if (!cart[name]) cart[name] = { price, qty: 0 };
             cart[name].qty++;
             qtyDisplay.innerText = cart[name].qty;
             updateReceipt();
         });
-        
         card.querySelector('.minus').addEventListener('click', () => {
             if (cart[name] && cart[name].qty > 0) {
                 cart[name].qty--;
@@ -753,66 +335,53 @@ $imgBase = $basePath ? $basePath . '/' : '';
     });
 
     document.getElementById("placeOrderBtn").addEventListener("click", function () {
-        const customerName = document.getElementById("customerName").value.trim();
-        const tableNum = document.getElementById("tableNum").value.trim();
-        
-        if (!customerName) {
-            alert("Please enter customer name");
-            return;
-        }
-        
         let count = 0;
         Object.keys(cart).forEach(name => { if (cart[name].qty > 0) count++; });
         if (count === 0) { alert("No items in order."); return; }
-        
+        document.getElementById("placeOrderModal").classList.add("open");
+    });
+
+    document.getElementById("placeOrderForm").addEventListener("submit", function (e) {
+        e.preventDefault();
         const items = [];
         Object.keys(cart).forEach(name => {
             if (cart[name].qty > 0) items.push({ name: name, price: cart[name].price, qty: cart[name].qty });
         });
-        
-        this.disabled = true;
-        this.textContent = "PLACING ORDER...";
-        
-        fetch("api/save_order.php", {
+        fetch("../api/save_order.php", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-                customer_name: customerName,
-                table_num: tableNum || "1",
+                customer_name: document.getElementById("customerName").value || "Walk-in",
+                table_num: document.getElementById("tableNum").value || "1",
                 items: items
             })
         })
         .then(r => r.json())
         .then(d => {
             if (d.success) {
-                alert("Order #" + d.order_id + " placed successfully!");
+                closePlaceOrderModal();
                 cart = {};
                 document.querySelectorAll(".qty-number").forEach(el => el.innerText = "0");
                 updateReceipt();
-                document.getElementById("customerName").value = "";
-                document.getElementById("tableNum").value = "1";
-                
-                // Refresh payment tab
+                alert("Order #" + d.order_id + " placed successfully!");
                 location.reload();
             } else {
                 alert(d.error || "Failed to place order");
             }
-            this.disabled = false;
-            this.textContent = "PLACE ORDER";
         })
         .catch(err => {
             console.error(err);
             alert("Failed to place order. Please try again.");
-            this.disabled = false;
-            this.textContent = "PLACE ORDER";
         });
     });
+
+    function closePlaceOrderModal() { document.getElementById("placeOrderModal").classList.remove("open"); }
+    document.getElementById("placeOrderModal").addEventListener("click", function(e) { if (e.target === this) closePlaceOrderModal(); });
 
     document.getElementById("printBtn").addEventListener("click", function () {
         let count = 0;
         Object.keys(cart).forEach(name => { if (cart[name].qty > 0) count++; });
         if (count === 0) { alert("No items in order."); return; }
-        
         let receiptContent = `<h2>The Debug Café</h2><p>${new Date().toLocaleString()}</p><hr>`;
         let total = 0;
         Object.keys(cart).forEach(name => {
@@ -823,7 +392,6 @@ $imgBase = $basePath ? $basePath . '/' : '';
             }
         });
         receiptContent += `<hr><h3>Total: ₱${total.toFixed(2)}</h3><p>Thank you for visiting!</p>`;
-        
         let printWindow = window.open('', '', 'width=400,height=600');
         printWindow.document.write(`<html><head><title>Receipt</title><style>body{font-family:monospace;padding:20px;text-align:center;}hr{border:1px dashed black;}</style></head><body>${receiptContent}</body></html>`);
         printWindow.document.close();
@@ -889,12 +457,12 @@ $imgBase = $basePath ? $basePath . '/' : '';
             
             if (change >= 0) {
                 document.getElementById('changeDisplay').textContent = `Change: ₱${change.toFixed(2)}`;
-                document.getElementById('changeDisplay').style.backgroundColor = '#3d2d00';
+                document.getElementById('changeDisplay').style.background = '#3d2d00';
                 document.getElementById('changeDisplay').style.color = '#ECB212';
                 document.getElementById('confirmPaymentBtn').disabled = false;
             } else {
                 document.getElementById('changeDisplay').textContent = `Insufficient: ₱${Math.abs(change).toFixed(2)} more needed`;
-                document.getElementById('changeDisplay').style.backgroundColor = '#e74c3c';
+                document.getElementById('changeDisplay').style.background = '#e74c3c';
                 document.getElementById('changeDisplay').style.color = 'white';
                 document.getElementById('confirmPaymentBtn').disabled = true;
             }
@@ -928,12 +496,12 @@ $imgBase = $basePath ? $basePath . '/' : '';
         
         if (change >= 0) {
             document.getElementById('changeDisplay').textContent = `Change: ₱${change.toFixed(2)}`;
-            document.getElementById('changeDisplay').style.backgroundColor = '#3d2d00';
+            document.getElementById('changeDisplay').style.background = '#3d2d00';
             document.getElementById('changeDisplay').style.color = '#ECB212';
             document.getElementById('confirmPaymentBtn').disabled = false;
         } else {
             document.getElementById('changeDisplay').textContent = `Insufficient: ₱${Math.abs(change).toFixed(2)} more needed`;
-            document.getElementById('changeDisplay').style.backgroundColor = '#e74c3c';
+            document.getElementById('changeDisplay').style.background = '#e74c3c';
             document.getElementById('changeDisplay').style.color = 'white';
             document.getElementById('confirmPaymentBtn').disabled = true;
         }
@@ -980,7 +548,7 @@ $imgBase = $basePath ? $basePath . '/' : '';
     }
 
     function processPaymentAPI(orderId, method, received, change, discountPercent, discountAmount, finalAmount) {
-        fetch('api/process_payment.php', {
+        fetch('../api/process_payment.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ 

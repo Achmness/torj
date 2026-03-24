@@ -9,7 +9,7 @@ $products = [];
 $r = mysqli_query($conn, "SELECT * FROM products ORDER BY category, name");
 if ($r) while ($row = mysqli_fetch_assoc($r)) $products[] = $row;
 
-$upload_dir = __DIR__ . '/uploads/products/';
+$upload_dir = __DIR__ . '/../uploads/products/';
 $basePath = rtrim(dirname($_SERVER['SCRIPT_NAME'] ?? ''), '/\\');
 $basePath = ($basePath === '' || $basePath === '.') ? '' : $basePath;
 $imgBase = $basePath ? $basePath . '/' : '';
@@ -19,248 +19,10 @@ $imgBase = $basePath ? $basePath . '/' : '';
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="../style/style.css">
+    <link rel="stylesheet" href="../style/customer_order.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <title>Place Order - Debug Café</title>
-<style>
-        body { margin: 0; padding: 0; background: rgb(136, 136, 131); }
-        .neworder-main { 
-            min-height: 100vh; 
-            padding: 20px; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            justify-content: center; 
-        }
-        .neworder-main .outer { margin: 0; }
-        
-        .back-to-home {
-            display: flex;
-            align-items: center;
-            gap: 0.8rem;
-            padding: 1rem 0;
-            margin-left: 0px;
-            margin-bottom: 650px;
-            color: #E8E0D5;
-            text-decoration: none;
-            transition: all 0.3s;
-            font-size: 0.9rem;
-            font-weight: 600;
-            padding-top: 0px;
-
-
-        }
-        
-        .back-to-home:hover {
-            color: #ECB212;
-        }
-        
-        /* Receipt Modal */
-        .receipt-modal {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.7);
-            z-index: 9999;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        .receipt-modal.open {
-            display: flex;
-        }
-        
-        .receipt-content {
-            background: white;
-            padding: 30px;
-            border-radius: 12px;
-            max-width: 400px;
-            width: 90%;
-            text-align: center;
-        }
-        
-        .receipt-content h2 {
-            color: #3d2d00;
-            margin-bottom: 20px;
-        }
-        
-        .order-number {
-            font-size: 3rem;
-            font-weight: bold;
-            color: #ECB212;
-            margin: 20px 0;
-            padding: 20px;
-            background: #f9f9f9;
-            border-radius: 10px;
-        }
-        
-        .receipt-details {
-            text-align: left;
-            margin: 20px 0;
-            padding: 15px;
-            background: #f9f9f9;
-            border-radius: 8px;
-        }
-        
-        .receipt-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px dashed #ddd;
-        }
-        
-        .receipt-item:last-child {
-            border-bottom: none;
-            font-weight: bold;
-            font-size: 1.2rem;
-            margin-top: 10px;
-            padding-top: 10px;
-            border-top: 2px solid #3d2d00;
-        }
-        
-        .btn-print, .btn-close {
-            padding: 12px 30px;
-            margin: 10px 5px;
-            border: none;
-            border-radius: 8px;
-            font-weight: bold;
-            cursor: pointer;
-            font-size: 1rem;
-        }
-        
-        .btn-print {
-            background: #3d2d00;
-            color: white;
-        }
-        
-        .btn-print:hover {
-            background: #ECB212;
-            color: #3d2d00;
-        }
-        
-        .btn-close {
-            background: #95a5a6;
-            color: white;
-        }
-        
-        .btn-close:hover {
-            background: #7f8c8d;
-        }
-        
-        .instruction-text {
-            color: #666;
-            margin: 15px 0;
-            font-size: 0.95rem;
-        }
-
-        .back-to{
-            display: flex;
-            align-items: start;
-            
-        }
-        
-        /* Print Styles - Fit to bond paper */
-        @media print {
-            @page {
-                size: A4;
-                margin: 15mm;
-            }
-            
-            body * {
-                visibility: hidden;
-            }
-            
-            .receipt-modal {
-                position: absolute;
-                left: 0;
-                top: 0;
-                width: 100%;
-                height: 100%;
-                background: white !important;
-                display: block !important;
-            }
-            
-            .receipt-content, .receipt-content * {
-                visibility: visible;
-            }
-            
-            .receipt-content {
-                position: absolute;
-                left: 50%;
-                top: 20mm;
-                transform: translateX(-50%);
-                width: 170mm;
-                max-width: 170mm;
-                padding: 20px;
-                border: 2px solid #3d2d00;
-                border-radius: 0;
-                box-shadow: none;
-            }
-            
-            .receipt-content h2 {
-                font-size: 24pt;
-                margin-bottom: 15px;
-            }
-            
-            .order-number {
-                font-size: 48pt;
-                margin: 15px 0;
-                padding: 15px;
-                background: #f0f0f0 !important;
-                border: 3px solid #ECB212;
-                border-radius: 8px;
-                page-break-inside: avoid;
-            }
-            
-            .instruction-text {
-                font-size: 14pt;
-                margin: 15px 0;
-                font-weight: bold;
-                color: #000 !important;
-            }
-            
-            .receipt-details {
-                margin: 15px 0;
-                padding: 15px;
-                background: #f9f9f9 !important;
-                border: 1px solid #ddd;
-                border-radius: 8px;
-                page-break-inside: avoid;
-            }
-            
-            .receipt-details p {
-                font-size: 12pt;
-                margin: 8px 0;
-            }
-            
-            .receipt-item {
-                font-size: 11pt;
-                padding: 10px 0;
-            }
-            
-            .receipt-item:last-child {
-                font-size: 16pt;
-                margin-top: 15px;
-                padding-top: 15px;
-            }
-            
-            .btn-print, .btn-close {
-                display: none !important;
-            }
-            
-            /* Add footer */
-            .receipt-content::after {
-                content: "Thank you for your order! Please proceed to the cashier for payment.";
-                display: block;
-                text-align: center;
-                margin-top: 30px;
-                padding-top: 20px;
-                border-top: 2px dashed #3d2d00;
-                font-size: 11pt;
-                color: #666;
-            }
-        }
-    </style>
 
 </head>
 <body style="padding-top: 30px;">
@@ -275,7 +37,7 @@ $imgBase = $basePath ? $basePath . '/' : '';
         <div class="outer">
             <div class="inner-1">
                 <div class="innerimage">
-                    <img src="logo.png" class="imagecafe" alt="Logo">
+                    <img src="../logo.png" class="imagecafe" alt="Logo">
                     <p class="nav-header">PRODUCTS</p>
                     <div class="prod">
                         <p class="nav-item active" data-cat="hot">Hot Drinks</p>
@@ -295,7 +57,7 @@ $imgBase = $basePath ? $basePath . '/' : '';
                         $price = (float)($p['price'] ?? 0);
                         $cat = $p['category'] ?? 'hot';
                         $img = !empty($p['image']) && file_exists($upload_dir . $p['image'])
-                            ? $imgBase . 'uploads/products/' . htmlspecialchars($p['image'])
+                            ? $imgBase . '../uploads/products/' . htmlspecialchars($p['image'])
                             : 'logo.png';
                         $idx++;
                     ?>
@@ -456,7 +218,7 @@ $imgBase = $basePath ? $basePath . '/' : '';
         this.disabled = true;
         this.textContent = "PLACING ORDER...";
         
-        fetch("api/save_order.php", {
+        fetch("../api/save_order.php", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({

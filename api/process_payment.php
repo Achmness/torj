@@ -14,7 +14,7 @@ if ($user_role !== 'cashier' && $user_role !== 'admin') {
     exit;
 }
 
-include __DIR__ . '/../db.php';
+include __DIR__ . '/../php/db.php';
 
 $input = json_decode(file_get_contents('php://input'), true);
 $order_id = (int)($input['order_id'] ?? 0);

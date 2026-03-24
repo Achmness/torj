@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="../style.css">
     <title>Debug Cafe | Bread and Pastries</title>
 </head>
 <body>
 <div class="outer">
     <div class="inner-1">
         <div class="innerimage">
-            <img src="logo.png" class="imagecafe" alt="Logo">
+            <img src="../logo.png" class="imagecafe" alt="Logo">
             <p class="nav-header">PRODUCTS</p>
             <div class="prod">
                 <p class="nav-item" onclick="window.location.href='home.php'">Hot Drinks</p>

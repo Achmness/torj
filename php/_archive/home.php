@@ -14,7 +14,7 @@ $products = [];
 $r = mysqli_query($conn, "SELECT * FROM products ORDER BY category, name");
 if ($r) while ($row = mysqli_fetch_assoc($r)) $products[] = $row;
 
-$upload_dir = __DIR__ . '/uploads/products/';
+$upload_dir = __DIR__ . '/../uploads/products/';
 $basePath = rtrim(dirname($_SERVER['SCRIPT_NAME'] ?? ''), '/\\');
 $basePath = ($basePath === '' || $basePath === '.') ? '' : $basePath;
 $imgBase = $basePath ? $basePath . '/' : '';
@@ -24,7 +24,7 @@ $imgBase = $basePath ? $basePath . '/' : '';
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="../style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <title>New Order - Debug Café</title>
     <style>
@@ -45,7 +45,7 @@ $imgBase = $basePath ? $basePath . '/' : '';
         <div class="outer">
             <div class="inner-1">
                 <div class="innerimage">
-                    <img src="logo.png" class="imagecafe" alt="Logo">
+                    <img src="../logo.png" class="imagecafe" alt="Logo">
                     <p class="nav-header">PRODUCTS</p>
                     <div class="prod">
                         <p class="nav-item active" data-cat="hot">Hot Drinks</p>
@@ -69,7 +69,7 @@ $imgBase = $basePath ? $basePath . '/' : '';
                         $price = (float)($p['price'] ?? 0);
                         $cat = $p['category'] ?? 'hot';
                         $img = !empty($p['image']) && file_exists($upload_dir . $p['image'])
-                            ? $imgBase . 'uploads/products/' . htmlspecialchars($p['image'])
+                            ? $imgBase . '../uploads/products/' . htmlspecialchars($p['image'])
                             : 'logo.png';
                         $idx++;
                     ?>
@@ -228,7 +228,7 @@ $imgBase = $basePath ? $basePath . '/' : '';
         Object.keys(cart).forEach(name => {
             if (cart[name].qty > 0) items.push({ name: name, price: cart[name].price, qty: cart[name].qty });
         });
-        fetch("api/save_order.php", {
+        fetch("../api/save_order.php", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({

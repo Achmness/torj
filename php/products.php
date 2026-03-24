@@ -11,7 +11,7 @@ include "db.php";
 $fullname = isset($_SESSION['fullname']) ? htmlspecialchars($_SESSION['fullname']) : 'Admin';
 
 // Handle add/edit/delete
-$upload_dir = __DIR__ . '/uploads/products/';
+$upload_dir = __DIR__ . '/../uploads/products/';
 $allowed_types = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
 
 function saveUploadedImage($fileKey, $uploadDir, $allowedTypes) {
@@ -89,13 +89,14 @@ $imgBase = $basePath ? $basePath . '/' : '';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manage Products - Debug Café</title>
-    <link rel="stylesheet" href="admin.css">
+    <link rel="stylesheet" href="../style/admin.css">
+    <link rel="stylesheet" href="../style/products.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
     <aside class="sidebar">
         <div class="sidebar-header">
-            <img src="logo.png" alt="Debug Café" class="sidebar-logo">
+            <img src="../logo.png" alt="Debug Café" class="sidebar-logo">
             <h1 class="sidebar-brand">Debug Café</h1>
             <p class="sidebar-tagline">Coffee & Code</p>
         </div>
@@ -142,7 +143,7 @@ $imgBase = $basePath ? $basePath . '/' : '';
                                     <td><?php echo $pid; ?></td>
                                     <td>
                                         <?php if (!empty($p['image']) && file_exists($upload_dir . $p['image'])): ?>
-                                            <img src="<?php echo htmlspecialchars($imgBase); ?>uploads/products/<?php echo htmlspecialchars($p['image']); ?>" alt="" class="product-thumb">
+                                            <img src="<?php echo htmlspecialchars($imgBase); ?>../uploads/products/<?php echo htmlspecialchars($p['image']); ?>" alt="" class="product-thumb">
                                         <?php else: ?>
                                             <span class="no-img">—</span>
                                         <?php endif; ?>
@@ -220,7 +221,7 @@ $imgBase = $basePath ? $basePath . '/' : '';
             document.getElementById('formImage').value = '';
             var img = document.getElementById('currentImage');
             if (p.image) {
-                img.innerHTML = '<p>Current:</p><img src="' + IMG_BASE + 'uploads/products/' + p.image.replace(/["'<>]/g, '') + '" alt="" style="max-width:80px;border-radius:8px;">';
+                img.innerHTML = '<p>Current:</p><img src="' + IMG_BASE + '../uploads/products/' + p.image.replace(/["'<>]/g, '') + '" alt="" style="max-width:80px;border-radius:8px;">';
             } else {
                 img.innerHTML = '';
             }

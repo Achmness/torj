@@ -34,128 +34,14 @@ if ($result) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Barista Dashboard - Debug Café</title>
-    <link rel="stylesheet" href="admin.css">
+    <link rel="stylesheet" href="../style/admin.css">
+    <link rel="stylesheet" href="../style/barista.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <style>
-        .btn-complete-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background-color: #27AE60;
-            color: white;
-            padding: 6px 12px;
-            border-radius: 12px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.2s, transform 0.2s;
-            border: none;
-        }
-
-        .btn-complete-badge:hover {
-            background-color: #2ecc71;
-            transform: translateY(-2px);
-        }
-
-        .btn-complete-badge i {
-            font-size: 0.85rem;
-        }
-
-        .filter-tabs {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 2rem;
-        }
-
-        .filter-tab {
-            padding: 0.8rem 1.5rem;
-            background: white;
-            border: 2px solid #E8E0D5;
-            border-radius: 8px;
-            text-decoration: none;
-            color: #5d4037;
-            font-weight: 600;
-            transition: all 0.3s;
-        }
-
-        .filter-tab:hover {
-            border-color: #8B6F47;
-        }
-
-        .filter-tab.active {
-            background: #ECB212;
-            border-color: #ECB212;
-            color: #3d2d00;
-        }
-
-        .order-details-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background-color: #5d4037;
-            color: white;
-            padding: 6px 12px;
-            border-radius: 8px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.2s;
-            text-decoration: none;
-            border: none;
-        }
-
-        .order-details-btn:hover {
-            background-color: #8B6F47;
-        }
-
-        .status-badge.status-completed {
-            background: #4caf50;
-            color: white;
-        }
-
-        .status-select {
-            padding: 6px 12px;
-            border: 2px solid #E8E0D5;
-            border-radius: 8px;
-            background: white;
-            color: #5d4037;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .status-select:hover {
-            border-color: #ECB212;
-        }
-        
-        .status-select:focus {
-            outline: none;
-            border-color: #8B6F47;
-            box-shadow: 0 0 0 3px rgba(139, 111, 71, 0.1);
-        }
-        
-        .status-select option {
-            padding: 8px;
-        }
-        
-        .status-badge {
-            display: inline-block;
-            padding: 6px 12px;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-        
-        .status-badge.status-cancelled {
-            background: #f44336;
-            color: white;
-        }
-    </style>
 </head>
 <body>
     <aside class="sidebar">
         <div class="sidebar-header">
-            <img src="logo.png" alt="Debug Café" class="sidebar-logo">
+            <img src="../logo.png" alt="Debug Café" class="sidebar-logo">
             <h1 class="sidebar-brand">Debug Café</h1>
             <p class="sidebar-tagline">Coffee & Code</p>
         </div>
@@ -239,43 +125,6 @@ if ($result) {
         </section>
     </main>
 
-    <script>
-        document.querySelectorAll('.status-select').forEach(select => {
-            select.addEventListener('change', function() {
-                const orderId = this.dataset.orderId;
-                const newStatus = this.value;
-                
-                if (confirm(`Update order #${orderId} status to "${newStatus}"?`)) {
-                    fetch('api/barista_update_status.php', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            order_id: orderId,
-                            status: newStatus
-                        })
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            alert('Order status updated successfully!');
-                            location.reload();
-                        } else {
-                            alert('Error: ' + (data.error || 'Failed to update status'));
-                            location.reload();
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        alert('Failed to update order status');
-                        location.reload();
-                    });
-                } else {
-                    location.reload();
-                }
-            });
-        });
-    </script>
+    <script src="../js/barista.js"></script>
 </body>
 </html>

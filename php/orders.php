@@ -38,80 +38,14 @@ if ($result) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Orders - Debug Café</title>
-    <link rel="stylesheet" href="admin.css">
+    <link rel="stylesheet" href="../style/admin.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <style>
-        .status-select {
-            padding: 6px 12px;
-            border: 2px solid #E8E0D5;
-            border-radius: 8px;
-            background: white;
-            color: #5d4037;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        .status-select:hover {
-            border-color: #ECB212;
-        }
-        .status-select:focus {
-            outline: none;
-            border-color: #8B6F47;
-            box-shadow: 0 0 0 3px rgba(139, 111, 71, 0.1);
-        }
-        .status-select option {
-            padding: 8px;
-        }
-        .status-badge {
-            display: inline-block;
-            padding: 6px 12px;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-        .status-badge.status-completed {
-            background: #4caf50;
-            color: white;
-        }
-        .status-badge.status-cancelled {
-            background: #f44336;
-            color: white;
-        }
-        .payment-badge {
-            display: inline-block;
-            padding: 4px 10px;
-            border-radius: 6px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            margin-left: 8px;
-        }
-        .payment-badge.paid {
-            background: #4caf50;
-            color: white;
-        }
-        .payment-badge.unpaid {
-            background: #ff9800;
-            color: white;
-        }
-        .btn-process-payment {
-            padding: 6px 12px;
-            background: #4caf50;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s;
-        }
-        .btn-process-payment:hover {
-            background: #45a049;
-        }
-    </style>
+    <link rel="stylesheet" href="../style/order.css">
 </head>
 <body>
     <aside class="sidebar">
         <div class="sidebar-header">
-            <img src="logo.png" alt="Debug Café" class="sidebar-logo">
+            <img src="../logo.png" alt="Debug Café" class="sidebar-logo">
             <h1 class="sidebar-brand">Debug Café</h1>
             <p class="sidebar-tagline">Coffee & Code</p>
         </div>
@@ -266,7 +200,7 @@ if ($result) {
         // Process payment
         function processPayment(orderId) {
             if (confirm(`Process payment for order #${orderId}?`)) {
-                fetch('api/process_payment.php', {
+                fetch('../api/process_payment.php', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
