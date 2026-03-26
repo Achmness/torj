@@ -40,7 +40,7 @@ $imgBase = $basePath ? $basePath . '/' : '';
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="../style/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="../style/neworder.css">
     <title>New Order - Debug Café</title>
@@ -52,8 +52,8 @@ $imgBase = $basePath ? $basePath . '/' : '';
         <a href="admin.php" class="back-to-dashboard">
             <i class="fas fa-arrow-left"></i> Back
         </a>
-        <a href="neworder.php" class="tab-btn active"><i class="fas fa-shopping-cart"></i> New Order</a>
-        <a href="process_payment.php" class="tab-btn"><i class="fas fa-cash-register"></i> Process Payment</a>
+        <a href="neworder.php" class="back-to-dashboard"><i class="fas fa-shopping-cart"></i> New Order</a>
+        <a href="process_payment.php" class="back-to-dashboard"><i class="fas fa-cash-register"></i> Process Payment</a>
     </div>
 
     <div class="container">

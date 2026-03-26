@@ -115,22 +115,58 @@ if ($payment_method === 'online' && $online_payment_method) {
     }
 }
 
-// Update order based on available columns
+// Update order based on available columns.
+// Key goal: if `payment_status` exists, always set it to `paid` so the order disappears from "pending payments".
 $cashier_id = $_SESSION['user_id'];
 
-if ($has_payment_status && $has_processed_by && $has_updated_at && $has_payment_method && $has_discount) {
-    // Full system with all columns
-    $stmt = $conn->prepare("UPDATE orders SET payment_status = 'paid', processed_by = ?, status = 'completed', updated_at = NOW(), payment_method = ?, discount_percent = ?, discount_amount = ?, total = ? WHERE id = ?");
-    $stmt->bind_param("isdddi", $cashier_id, $payment_method, $discount_percent, $discount_amount, $final_amount, $order_id);
-} elseif ($has_payment_status && $has_processed_by && $has_updated_at) {
-    // System with basic payment tracking
-    $stmt = $conn->prepare("UPDATE orders SET payment_status = 'paid', processed_by = ?, status = 'completed', updated_at = NOW(), total = ? WHERE id = ?");
-    $stmt->bind_param("idi", $cashier_id, $final_amount, $order_id);
-} else {
-    // Old system - just update status and total
-    $stmt = $conn->prepare("UPDATE orders SET status = 'completed', total = ? WHERE id = ?");
-    $stmt->bind_param("di", $final_amount, $order_id);
+$setParts = [];
+$setParts[] = "status = 'completed'";
+
+if ($has_payment_status) $setParts[] = "payment_status = 'paid'";
+if ($has_updated_at) $setParts[] = "updated_at = NOW()";
+
+$types = '';
+$params = [];
+
+if ($has_processed_by) {
+    $setParts[] = "processed_by = ?";
+    $types .= 'i';
+    $params[] = $cashier_id;
 }
+
+if ($has_payment_method) {
+    $setParts[] = "payment_method = ?";
+    $types .= 's';
+    $params[] = $payment_method;
+}
+
+if ($has_discount) {
+    $setParts[] = "discount_percent = ?";
+    $types .= 'd';
+    $params[] = $discount_percent;
+
+    $setParts[] = "discount_amount = ?";
+    $types .= 'd';
+    $params[] = $discount_amount;
+}
+
+// `total` is required because `orders.total` is used everywhere in your UI.
+$setParts[] = "total = ?";
+$types .= 'd';
+$params[] = $final_amount;
+
+$sql = "UPDATE orders SET " . implode(', ', $setParts) . " WHERE id = ?";
+$types .= 'i';
+$params[] = $order_id;
+
+$stmt = $conn->prepare($sql);
+
+// bind_param requires references when using call_user_func_array
+$bindRefs = [];
+foreach ($params as $i => $val) {
+    $bindRefs[$i] = &$params[$i];
+}
+call_user_func_array([$stmt, 'bind_param'], array_merge([$types], $bindRefs));
 
 if ($stmt->execute()) {
     $response_data = [
@@ -153,7 +189,7 @@ if ($stmt->execute()) {
     }
     
     if (!$has_payment_status || !$has_processed_by) {
-        $response_data['warning'] = 'Please run migrate_optimized_orders.sql to enable full features';
+        $response_data['warning'] = 'Some payment columns are missing (you may need migration).';
     }
     
     echo json_encode($response_data);

@@ -25,11 +25,11 @@ $imgBase = $basePath ? $basePath . '/' : '';
     <title>Place Order - Debug Café</title>
 
 </head>
-<body style="padding-top: 30px;">
+<body style="padding-top: 20px;">
     <div class="backto">
     <a href="index.php" class="back-to-home">
         <i class="fas fa-arrow-left"></i>
-        <span>Back to Home</span>
+        Back to Home
     </a>
     </div>
     

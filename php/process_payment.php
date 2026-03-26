@@ -32,18 +32,18 @@ if ($orders_result) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Process Payment - Debug Café</title>
-    <link rel="stylesheet" href="../style/neworder.css">
+    <link rel="stylesheet" href="../style/process_payment.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
-<body style="padding-top: 30px;">
+<body style="padding-top: 0px;">
     <div class="tab-navigation">
         <?php if ($is_admin): ?>
             <a href="admin.php" class="back-to-dashboard"><i class="fas fa-arrow-left"></i> Back</a>
         <?php endif; ?>
-        <a href="<?php echo $home_page; ?>" class="tab-btn">
-            <i class="fas fa-shopping-cart"></i> New Order
+        <a href="<?php echo $home_page; ?>" class="back-to-dashboard">
+            <i class="fas fa-shopping-cart"></i> New Orders
         </a>
-        <a href="process_payment.php" class="tab-btn active">
+        <a href="process_payment.php" class="back-to-dashboard">
             <i class="fas fa-cash-register"></i> Process Payment
         </a>
         <?php if (!$is_admin): ?>
@@ -81,7 +81,7 @@ if ($orders_result) {
                                 </div>
 
                                 <div class="order-actions">
-                                    <button class="btn-process" onclick="openPaymentModal(<?php echo (int)$order['id']; ?>, <?php echo json_encode($order['customer_name']); ?>, <?php echo (float)$order['total']; ?>)">
+                                    <button class="btn-process" onclick='openPaymentModal(<?php echo (int)$order['id']; ?>, <?php echo json_encode($order['customer_name']); ?>, <?php echo (float)$order['total']; ?>)'>
                                         <i class="fas fa-money-bill-wave"></i> Process Payment
                                     </button>
                                     <a href="order_detail.php?id=<?php echo (int)$order['id']; ?>" class="btn-view">
@@ -92,7 +92,7 @@ if ($orders_result) {
                         <?php endforeach; ?>
                     <?php else: ?>
                         <div class="no-orders">
-                            <i class="fas fa-check-circle" style="font-size: 4rem; color: #27ae60; margin-bottom: 20px;"></i>
+                            <i cl   ass="fas fa-check-circle" style="font-size: 4rem; color: #27ae60; margin-bottom: 20px;"></i>
                             <p>No pending payments!</p>
                             <p style="font-size: 1rem; color: #999;">All orders have been paid.</p>
                         </div>
