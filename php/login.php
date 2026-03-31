@@ -52,7 +52,7 @@ if (isset($_POST['login'])) {
 
 <div class="login-box">
 
-    <img src="../logo.png" class="logo">
+    <img src="../images/logo.png" class="logo">
     <div class="title">The Debug Café</div>
     <div class="subtitle">Coffee & Code</div>
 

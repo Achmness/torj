@@ -34,7 +34,7 @@ foreach ($transactions as $t) $total_earnings += (float)$t['total'];
 <body>
     <aside class="sidebar">
         <div class="sidebar-header">
-            <img src="../logo.png" alt="Debug Café" class="sidebar-logo">
+            <img src="../images/logo.png" alt="Debug Café" class="sidebar-logo">
             <h1 class="sidebar-brand">Debug Café</h1>
             <p class="sidebar-tagline">Coffee & Code</p>
         </div>

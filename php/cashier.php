@@ -43,8 +43,9 @@ $imgBase = $basePath ? $basePath . '/' : '';
     <link rel="stylesheet" href="../style/cashier.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <title>Cashier - Debug Café</title>
+
 </head>
-<body>
+<body style="margin-top: 23px;">
 
     <!-- Tab Navigation -->
     <div class="tab-navigation">
@@ -63,7 +64,7 @@ $imgBase = $basePath ? $basePath . '/' : '';
                 <div class="outer">
                     <div class="inner-1">
                         <div class="innerimage">
-                            <img src="../logo.png" class="imagecafe" alt="Logo">
+                            <img src="../images/logo.png" class="imagecafe" alt="Logo">
                             <p class="nav-header">PRODUCTS</p>
                             <div class="prod">
                                 <p class="nav-item active" data-cat="hot">Hot Drinks</p>
@@ -108,15 +109,19 @@ $imgBase = $basePath ? $basePath . '/' : '';
                         <p class="cart-text">CURRENT ORDER</p>
                         <p id="timestamp" class="timestamp-text">No order active</p>
                         
-                        <div style="margin: 15px 0;">
-                            <label style="display:block; margin-bottom:5px; font-weight:bold; color:#3d2d00;">Customer Name:</label>
-                            <input type="text" id="customerName" placeholder="e.g. Walk-in" style="width:100%; padding:8px; border:2px solid #ECB212; border-radius:6px;">
+                        <!-- Customer Info Fields -->
+                        <div class="customer-info-section">
+                            <div class="form-group">
+                                <label for="customerNameField">Customer Name:</label>
+                                <input type="text" id="customerNameField" placeholder="Name" class="customer-input">
+                            </div>
+                            <div class="form-group">
+                                <label for="tableNumField">Table #:</label>
+                                <input type="text" id="tableNumField" placeholder="1" value="1" class="customer-input">
+                            </div>
                         </div>
                         
-                        <div style="margin: 15px 0;">
-                            <label style="display:block; margin-bottom:5px; font-weight:bold; color:#3d2d00;">Table #:</label>
-                            <input type="text" id="tableNum" placeholder="Table number" value="1" style="width:100%; padding:8px; border:2px solid #ECB212; border-radius:6px;">
-                        </div>
+                        <div class="divider"></div>
                         
                         <div id="receipt-items" class="receipt-items-container">
                             <p class="empty-msg">Select items to begin...</p>

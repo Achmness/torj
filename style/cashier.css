@@ -433,3 +433,43 @@ a {
 .btn-cancel:hover {
     background: #7f8c8d;
 }
+
+.customer-info-section {
+            margin-bottom: 1rem;
+        }
+        
+        .form-group {
+            margin-bottom: 0.8rem;
+        }
+        
+        .form-group label {
+            display: block;
+            font-weight: 700;
+            color: #3d2d00;
+            margin-bottom: 0.3rem;
+            font-size: 0.95rem;
+        }
+        
+        .customer-input {
+            width: 100%;
+            padding: 0.7rem;
+            border: 2px solid #ECB212;
+            border-radius: 8px;
+            font-size: 1rem;
+            box-sizing: border-box;
+            background: rgba(232, 224, 213, 0.3);
+            transition: all 0.3s;
+        }
+        
+        .customer-input:focus {
+            outline: none;
+            border-color: #8B6F47;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(139, 111, 71, 0.1);
+        }
+        
+        .divider {
+            height: 2px;
+            background: linear-gradient(to right, transparent, #3d2d00, transparent);
+            margin: 1rem 0;
+        }

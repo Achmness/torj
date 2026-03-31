@@ -65,7 +65,7 @@ $imgBase = $basePath ? $basePath . '/' : '';
             <div class="inner-1">
                 <div class="innerimage">
                     
-                    <img src="../logo.png" class="imagecafe" alt="Logo">
+                    <img src="../images/logo.png" class="imagecafe" alt="Logo">
 
                     <p class="nav-header">PRODUCTS</p>
                     <div class="prod">
@@ -107,6 +107,21 @@ $imgBase = $basePath ? $basePath . '/' : '';
             <div class="inner-3">
                 <p class="cart-text">CURRENT ORDER</p>
                 <p id="timestamp" class="timestamp-text">No order active</p>
+                
+                <!-- Customer Info Fields -->
+                <div class="customer-info-section">
+                    <div class="form-group">
+                        <label for="customerNameField">Customer Name:</label>
+                        <input type="text" id="customerNameField" placeholder="Name" class="customer-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="tableNumField">Table #:</label>
+                        <input type="text" id="tableNumField" placeholder="1" value="1" class="customer-input">
+                    </div>
+                </div>
+                
+                <div class="divider"></div>
+                
                 <div id="receipt-items" class="receipt-items-container">
                     <p class="empty-msg">Select items to begin...</p>
                 </div>
@@ -234,30 +249,47 @@ $imgBase = $basePath ? $basePath . '/' : '';
         </div>
     </div>
 
-    <div id="placeOrderModal" class="order-modal">
-        <div class="order-modal-content">
-            <h3>Place Order</h3>
-            <form id="placeOrderForm">
-                <label>Customer Name <input type="text" id="customerName" placeholder="Name" required></label>
-                <label>Table Number <input type="text" id="tableNum" placeholder="e.g. 1" value="1"></label>
-                <div class="modal-btns">
-                    <button type="submit" class="checkout-btn">Confirm Order</button>
-                    <button type="button" class="btn-cancel-modal" onclick="closePlaceOrderModal()">Cancel</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
     <style>
-    .order-modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:999; justify-content:center; align-items:center; }
-    .order-modal.open { display:flex; }
-    .order-modal-content { background:white; padding:24px; border-radius:12px; min-width:320px; }
-    .order-modal-content h3 { margin:0 0 16px; }
-    .order-modal-content label { display:block; margin-bottom:12px; }
-    .order-modal-content input { width:100%; padding:10px; border:2px solid #E8E0D5; border-radius:8px; box-sizing:border-box; }
-    .modal-btns { display:flex; gap:10px; margin-top:16px; }
-    .btn-cancel-modal { padding:10px 20px; background:#95a5a6; color:white; border:none; border-radius:8px; cursor:pointer; }
-    .checkout-btn { cursor:pointer; }
+    /* Customer Info Section Styling */
+    .customer-info-section {
+        margin-bottom: 1rem;
+    }
+    
+    .form-group {
+        margin-bottom: 0.8rem;
+    }
+    
+    .form-group label {
+        display: block;
+        font-weight: 700;
+        color: #3d2d00;
+        margin-bottom: 0.3rem;
+        font-size: 0.95rem;
+    }
+    
+    .customer-input {
+        width: 100%;
+        padding: 0.7rem;
+        border: 2px solid #ECB212;
+        border-radius: 8px;
+        font-size: 1rem;
+        box-sizing: border-box;
+        background: rgba(232, 224, 213, 0.3);
+        transition: all 0.3s;
+    }
+    
+    .customer-input:focus {
+        outline: none;
+        border-color: #8B6F47;
+        background: white;
+        box-shadow: 0 0 0 3px rgba(139, 111, 71, 0.1);
+    }
+    
+    .divider {
+        height: 2px;
+        background: linear-gradient(to right, transparent, #3d2d00, transparent);
+        margin: 1rem 0;
+    }
     </style>
 
     <script>
@@ -337,31 +369,47 @@ $imgBase = $basePath ? $basePath . '/' : '';
     document.getElementById("placeOrderBtn").addEventListener("click", function () {
         let count = 0;
         Object.keys(cart).forEach(name => { if (cart[name].qty > 0) count++; });
-        if (count === 0) { alert("No items in order."); return; }
-        document.getElementById("placeOrderModal").classList.add("open");
-    });
-
-    document.getElementById("placeOrderForm").addEventListener("submit", function (e) {
-        e.preventDefault();
+        if (count === 0) { 
+            alert("No items in order."); 
+            return; 
+        }
+        
+        const customerName = document.getElementById("customerNameField").value.trim();
+        const tableNum = document.getElementById("tableNumField").value.trim();
+        
+        if (!customerName) {
+            alert("Please enter customer name");
+            document.getElementById("customerNameField").focus();
+            return;
+        }
+        
+        if (!tableNum) {
+            alert("Please enter table number");
+            document.getElementById("tableNumField").focus();
+            return;
+        }
+        
         const items = [];
         Object.keys(cart).forEach(name => {
             if (cart[name].qty > 0) items.push({ name: name, price: cart[name].price, qty: cart[name].qty });
         });
+        
         fetch("../api/save_order.php", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-                customer_name: document.getElementById("customerName").value || "Walk-in",
-                table_num: document.getElementById("tableNum").value || "1",
+                customer_name: customerName,
+                table_num: tableNum,
                 items: items
             })
         })
         .then(r => r.json())
         .then(d => {
             if (d.success) {
-                closePlaceOrderModal();
                 cart = {};
                 document.querySelectorAll(".qty-number").forEach(el => el.innerText = "0");
+                document.getElementById("customerNameField").value = "";
+                document.getElementById("tableNumField").value = "1";
                 updateReceipt();
                 alert("Order #" + d.order_id + " placed successfully!");
                 location.reload();
@@ -374,9 +422,6 @@ $imgBase = $basePath ? $basePath . '/' : '';
             alert("Failed to place order. Please try again.");
         });
     });
-
-    function closePlaceOrderModal() { document.getElementById("placeOrderModal").classList.remove("open"); }
-    document.getElementById("placeOrderModal").addEventListener("click", function(e) { if (e.target === this) closePlaceOrderModal(); });
 
     document.getElementById("printBtn").addEventListener("click", function () {
         let count = 0;

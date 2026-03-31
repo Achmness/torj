@@ -23,9 +23,51 @@ $imgBase = $basePath ? $basePath . '/' : '';
     <link rel="stylesheet" href="../style/customer_order.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <title>Place Order - Debug Café</title>
+    <style>
+        /* Customer Info Section Styling */
+        .customer-info-section {
+            margin-bottom: 1rem;
+        }
+        
+        .form-group {
+            margin-bottom: 0.8rem;
+        }
+        
+        .form-group label {
+            display: block;
+            font-weight: 700;
+            color: #3d2d00;
+            margin-bottom: 0.3rem;
+            font-size: 0.95rem;
+        }
+        
+        .customer-input {
+            width: 100%;
+            padding: 0.7rem;
+            border: 2px solid #ECB212;
+            border-radius: 8px;
+            font-size: 1rem;
+            box-sizing: border-box;
+            background: rgba(232, 224, 213, 0.3);
+            transition: all 0.3s;
+        }
+        
+        .customer-input:focus {
+            outline: none;
+            border-color: #8B6F47;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(139, 111, 71, 0.1);
+        }
+        
+        .divider {
+            height: 2px;
+            background: linear-gradient(to right, transparent, #3d2d00, transparent);
+            margin: 1rem 0;
+        }
+    </style>
 
 </head>
-<body style="padding-top: 20px;">
+<body style="padding-top: 32px;">
     <div class="backto">
     <a href="index.php" class="back-to-home">
         <i class="fas fa-arrow-left"></i>
@@ -37,7 +79,7 @@ $imgBase = $basePath ? $basePath . '/' : '';
         <div class="outer">
             <div class="inner-1">
                 <div class="innerimage">
-                    <img src="../logo.png" class="imagecafe" alt="Logo">
+                    <img src="../images/logo.png" class="imagecafe" alt="Logo">
                     <p class="nav-header">PRODUCTS</p>
                     <div class="prod">
                         <p class="nav-item active" data-cat="hot">Hot Drinks</p>
@@ -82,15 +124,19 @@ $imgBase = $basePath ? $basePath . '/' : '';
                 <p class="cart-text">YOUR ORDER</p>
                 <p id="timestamp" class="timestamp-text">Select items to begin...</p>
                 
-                <div style="margin: 15px 0;">
-                    <label style="display:block; margin-bottom:5px; font-weight:bold; color:#3d2d00;">Name:</label>
-                    <input type="text" id="customerName" value="<?php echo htmlspecialchars($customer_name); ?>" placeholder="Enter your name" style="width:100%; padding:8px; border:2px solid #ECB212; border-radius:6px;">
+                <!-- Customer Info Fields -->
+                <div class="customer-info-section">
+                    <div class="form-group">
+                        <label for="customerNameField">Name:</label>
+                        <input type="text" id="customerNameField" value="<?php echo htmlspecialchars($customer_name); ?>" placeholder="Enter your name" class="customer-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="tableNumField">Table #:</label>
+                        <input type="text" id="tableNumField" placeholder="1" value="1" class="customer-input">
+                    </div>
                 </div>
                 
-                <div style="margin: 15px 0;">
-                    <label style="display:block; margin-bottom:5px; font-weight:bold; color:#3d2d00;">Table #:</label>
-                    <input type="text" id="tableNum" placeholder="Table number" value="1" style="width:100%; padding:8px; border:2px solid #ECB212; border-radius:6px;">
-                </div>
+                <div class="divider"></div>
                 
                 <div id="receipt-items" class="receipt-items-container">
                     <p class="empty-msg">Select items to begin...</p>
@@ -198,11 +244,18 @@ $imgBase = $basePath ? $basePath . '/' : '';
     });
 
     document.getElementById("placeOrderBtn").addEventListener("click", function () {
-        const customerName = document.getElementById("customerName").value.trim();
-        const tableNum = document.getElementById("tableNum").value.trim();
+        const customerName = document.getElementById("customerNameField").value.trim();
+        const tableNum = document.getElementById("tableNumField").value.trim();
         
         if (!customerName) {
             alert("Please enter your name");
+            document.getElementById("customerNameField").focus();
+            return;
+        }
+        
+        if (!tableNum) {
+            alert("Please enter table number");
+            document.getElementById("tableNumField").focus();
             return;
         }
         
@@ -223,7 +276,7 @@ $imgBase = $basePath ? $basePath . '/' : '';
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
                 customer_name: customerName,
-                table_num: tableNum || "1",
+                table_num: tableNum,
                 order_type: "customer",
                 items: items
             })
@@ -235,7 +288,7 @@ $imgBase = $basePath ? $basePath . '/' : '';
                 lastOrderId = d.order_id;
                 lastOrderData = {
                     customerName: customerName,
-                    tableNum: tableNum || "1",
+                    tableNum: tableNum,
                     items: items,
                     timestamp: new Date().toLocaleString()
                 };
@@ -247,8 +300,8 @@ $imgBase = $basePath ? $basePath . '/' : '';
                 cart = {};
                 document.querySelectorAll(".qty-number").forEach(el => el.innerText = "0");
                 updateReceipt();
-                document.getElementById("customerName").value = "<?php echo $customer_name; ?>";
-                document.getElementById("tableNum").value = "1";
+                document.getElementById("customerNameField").value = "<?php echo $customer_name; ?>";
+                document.getElementById("tableNumField").value = "1";
             } else {
                 alert(d.error || "Failed to place order");
             }

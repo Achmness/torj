@@ -45,7 +45,7 @@ $fullname = isset($_SESSION['fullname']) ? htmlspecialchars($_SESSION['fullname'
 <body>
     <aside class="sidebar">
         <div class="sidebar-header">
-            <img src="../logo.png" alt="Debug Café" class="sidebar-logo">
+            <img src="../images/logo.png" alt="Debug Café" class="sidebar-logo">
             <h1 class="sidebar-brand">Debug Café</h1>
             <p class="sidebar-tagline">Coffee & Code</p>
         </div>
