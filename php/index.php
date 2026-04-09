@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-// Redirect if already logged in
+// Redirect if already logged in (only for staff roles)
 if(isset($_SESSION['role'])) {
     if($_SESSION['role'] == 'admin') {
         header("Location: admin.php");
@@ -12,10 +12,8 @@ if(isset($_SESSION['role'])) {
     } elseif($_SESSION['role'] == 'barista') {
         header("Location: barista.php");
         exit();
-    } else {
-        header("Location: customer_order.php");
-        exit();
     }
+    // Customers can stay on index.php
 }
 ?>
 <!DOCTYPE html>
@@ -35,12 +33,19 @@ if(isset($_SESSION['role'])) {
         </div>
         <div class="nav-links">
             <a href="customer_order.php">Order Now</a>
-            <a href="login.php" class="btn btn-login">
-                <i class="fas fa-sign-in-alt"></i> Login
-            </a>
-            <a href="register.php" class="btn btn-register">
-                <i class="fas fa-user-plus"></i> Register
-            </a>
+            <?php if(isset($_SESSION['role']) && $_SESSION['role'] == 'customer'): ?>
+                <span style="color: #E8E0D5; margin: 0 1rem;">Welcome, <?php echo htmlspecialchars($_SESSION['fullname']); ?>!</span>
+                <a href="logout.php" class="btn btn-login">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </a>
+            <?php else: ?>
+                <a href="login.php" class="btn btn-login">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </a>
+                <a href="register.php" class="btn btn-register">
+                    <i class="fas fa-user-plus"></i> Register
+                </a>
+            <?php endif; ?>
         </div>
     </nav>
 

@@ -70,6 +70,10 @@ if ($result) {
                 <i class="fas fa-box"></i>
                 <span>Manage Products</span>
             </a>
+            <a href="users.php" class="nav-item">
+                <i class="fas fa-users"></i>
+                <span>Manage Users</span>
+            </a>
         </nav>
         <a href="logout.php" class="nav-logout">
             <i class="fas fa-sign-out-alt"></i>
@@ -99,7 +103,6 @@ if ($result) {
                         <tr>
                             <th>Order ID</th>
                             <th>Customer</th>
-                            <th>Table</th>
                             <th>Total</th>
                             <th>Status</th>
                             <th>Payment</th>
@@ -113,7 +116,6 @@ if ($result) {
                                 <tr class="order-row" data-id="<?php echo $order['id']; ?>">
                                     <td>#<?php echo (int)$order['id']; ?></td>
                                     <td><?php echo htmlspecialchars($order['customer_name']); ?></td>
-                                    <td><?php echo htmlspecialchars($order['table_num']); ?></td>
                                     <td>₱<?php echo number_format((float)$order['total'], 2); ?></td>
                                     <td>
                                         <?php if ($order['status'] === 'completed' || $order['status'] === 'cancelled'): ?>
@@ -166,7 +168,7 @@ if ($result) {
                 const newStatus = this.value;
                 
                 if (confirm(`Update order #${orderId} status to "${newStatus}"?`)) {
-                    fetch('api/update_order_status.php', {
+                    fetch('../api/update_order_status.php', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',

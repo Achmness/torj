@@ -14,7 +14,7 @@ if (isset($_POST['register'])) {
         $error = "Email already exists!";
     } else {
         $sql = "INSERT INTO users (fullname, email, password, role)
-        VALUES ('$fullname', '$email', '$password', 'cashier')";
+        VALUES ('$fullname', '$email', '$password', 'customer')";
 
         if (mysqli_query($conn, $sql)) {
             header("Location: login.php");

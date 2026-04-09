@@ -115,10 +115,6 @@ $imgBase = $basePath ? $basePath . '/' : '';
                                 <label for="customerNameField">Customer Name:</label>
                                 <input type="text" id="customerNameField" placeholder="Name" class="customer-input">
                             </div>
-                            <div class="form-group">
-                                <label for="tableNumField">Table #:</label>
-                                <input type="text" id="tableNumField" placeholder="1" value="1" class="customer-input">
-                            </div>
                         </div>
                         
                         <div class="divider"></div>

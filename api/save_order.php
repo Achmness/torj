@@ -30,7 +30,6 @@ if (isset($_SESSION['user_id'])) {
 }
 
 $customer_name = trim($input['customer_name'] ?? 'Walk-in');
-$table_num = trim($input['table_num'] ?? '1');
 $items = $input['items'];
 
 $total = 0;
@@ -40,8 +39,8 @@ foreach ($items as $it) {
     if ($qty > 0 && $price >= 0) $total += $qty * $price;
 }
 
-$stmt = $conn->prepare("INSERT INTO orders (customer_id, processed_by, customer_name, table_num, total, status, payment_status) VALUES (?, ?, ?, ?, ?, 'pending', 'unpaid')");
-$stmt->bind_param("iissd", $customer_id, $processed_by, $customer_name, $table_num, $total);
+$stmt = $conn->prepare("INSERT INTO orders (customer_id, processed_by, customer_name, total, status, payment_status) VALUES (?, ?, ?, ?, 'pending', 'unpaid')");
+$stmt->bind_param("iisd", $customer_id, $processed_by, $customer_name, $total);
 if (!$stmt->execute()) {
     echo json_encode(['success' => false, 'error' => 'Failed to create order']);
     exit;

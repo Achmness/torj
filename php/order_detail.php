@@ -68,7 +68,6 @@ $fullname = isset($_SESSION['fullname']) ? htmlspecialchars($_SESSION['fullname'
         <section class="order-detail-card">
             <div class="order-detail-meta">
                 <p><strong>Customer:</strong> <?php echo htmlspecialchars($order['customer_name']); ?></p>
-                <p><strong>Table:</strong> <?php echo htmlspecialchars($order['table_num']); ?></p>
                 <p><strong>Date:</strong> <?php echo date('M j, Y g:i A', strtotime($order['created_at'])); ?></p>
                 <p><strong>Status:</strong>
                     <span class="status-badge status-<?php echo $order['status']; ?>"><?php echo ucfirst($order['status']); ?></span>

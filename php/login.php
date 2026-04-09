@@ -27,8 +27,14 @@ if (isset($_POST['login'])) {
                 case "cashier":
                     header("Location: cashier.php");
                     break;
-                default:
+                case "barista":
                     header("Location: barista.php");
+                    break;
+                case "customer":
+                    header("Location: index.php");
+                    break;
+                default:
+                    header("Location: index.php");
                     break;
             }
             exit();

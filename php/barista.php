@@ -41,7 +41,7 @@ if ($result) {
 <body>
     <aside class="sidebar">
         <div class="sidebar-header">
-            <img src="../logo.png" alt="Debug Café" class="sidebar-logo">
+            <img src="../images/logo.png" alt="Debug Café" class="sidebar-logo">
             <h1 class="sidebar-brand">Debug Café</h1>
             <p class="sidebar-tagline">Coffee & Code</p>
         </div>
@@ -94,7 +94,6 @@ if ($result) {
                                 <tr class="order-row" data-id="<?php echo $order['id']; ?>">
                                     <td>#<?php echo (int)$order['id']; ?></td>
                                     <td><?php echo htmlspecialchars($order['customer_name']); ?></td>
-                                    <td><?php echo htmlspecialchars($order['table_num']); ?></td>
                                     <td>₱<?php echo number_format((float)$order['total'], 2); ?></td>
                                     <td>
                                         <?php if ($order['status'] === 'completed' || $order['status'] === 'cancelled'): ?>
@@ -104,7 +103,6 @@ if ($result) {
                                         <?php else: ?>
                                             <select class="status-select" data-order-id="<?php echo $order['id']; ?>">
                                                 <option value="pending" <?php echo $order['status'] === 'pending' ? 'selected' : ''; ?>>Pending</option>
-                                                <option value="preparing" <?php echo $order['status'] === 'preparing' ? 'selected' : ''; ?>>Preparing</option>
                                                 <option value="ready" <?php echo $order['status'] === 'ready' ? 'selected' : ''; ?>>Ready</option>
                                                 <option value="completed" <?php echo $order['status'] === 'completed' ? 'selected' : ''; ?>>Completed</option>
                                                 <option value="cancelled" <?php echo $order['status'] === 'cancelled' ? 'selected' : ''; ?>>Cancelled</option>

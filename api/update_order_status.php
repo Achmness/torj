@@ -7,7 +7,7 @@ if (!isset($_SESSION['role']) || ($_SESSION['role'] != 'admin' && $_SESSION['rol
     exit();
 }
 
-include "../db.php";
+include "../php/db.php";
 
 $data = json_decode(file_get_contents('php://input'), true);
 

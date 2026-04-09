@@ -106,6 +106,7 @@ $imgBase = $basePath ? $basePath . '/' : '';
             <a href="orders.php" class="nav-item"><i class="fas fa-list"></i><span>Orders</span></a>
             <a href="transactions.php" class="nav-item"><i class="fas fa-exchange-alt"></i><span>Transactions</span></a>
             <a href="products.php" class="nav-item active"><i class="fas fa-box"></i><span>Manage Products</span></a>
+             <a href="users.php" class="nav-item "><i class="fas fa-box"></i><span>Manage Users</span></a>
         </nav>
         <a href="logout.php" class="nav-logout"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
     </aside>

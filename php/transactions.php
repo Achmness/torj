@@ -44,6 +44,7 @@ foreach ($transactions as $t) $total_earnings += (float)$t['total'];
             <a href="orders.php" class="nav-item"><i class="fas fa-list"></i><span>Orders</span></a>
             <a href="transactions.php" class="nav-item active"><i class="fas fa-exchange-alt"></i><span>Transactions</span></a>
             <a href="products.php" class="nav-item"><i class="fas fa-box"></i><span>Manage Products</span></a>
+            <a href="users.php" class="nav-item"><i class="fas fa-box"></i><span>Manage Users</span></a>
         </nav>
         <a href="logout.php" class="nav-logout"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
     </aside>
@@ -82,7 +83,6 @@ foreach ($transactions as $t) $total_earnings += (float)$t['total'];
                                 <tr>
                                     <td>#<?php echo (int)$t['id']; ?></td>
                                     <td><?php echo htmlspecialchars($t['customer_name']); ?></td>
-                                    <td><?php echo htmlspecialchars($t['table_num']); ?></td>
                                     <td>₱<?php echo number_format((float)$t['total'], 2); ?></td>
                                     <td><?php echo date('M j, Y g:i A', strtotime($t['created_at'])); ?></td>
                                     <td><a href="order_detail.php?id=<?php echo (int)$t['id']; ?>" class="btn-view">View</a></td>

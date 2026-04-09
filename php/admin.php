@@ -65,6 +65,10 @@ if ($r) while ($row = mysqli_fetch_assoc($r)) $mock_orders[] = $row;
                 <i class="fas fa-box"></i>
                 <span>Manage Products</span>
             </a>
+            <a href="users.php" class="nav-item">
+                <i class="fas fa-users"></i>
+                <span>Manage Users</span>
+            </a>
         </nav>
         <a href="logout.php" class="nav-logout">
             <i class="fas fa-sign-out-alt"></i>
@@ -147,7 +151,6 @@ if ($r) while ($row = mysqli_fetch_assoc($r)) $mock_orders[] = $row;
                                 <tr class="order-row" data-id="<?php echo $order['id']; ?>" onclick="window.location='order_detail.php?id=<?php echo (int)$order['id']; ?>'">
                                     <td>#<?php echo $order['id']; ?></td>
                                     <td><?php echo htmlspecialchars($order['customer_name']); ?></td>
-                                    <td><?php echo htmlspecialchars($order['table_num']); ?></td>
                                     <td>₱<?php echo number_format((float)$order['total'], 2); ?></td>
                                     <td>
                                         <span class="status-badge status-<?php echo $order['status']; ?>">

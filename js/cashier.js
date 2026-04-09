@@ -75,17 +75,10 @@ document.querySelectorAll('.product-card').forEach(card => {
 
 document.getElementById("placeOrderBtn").addEventListener("click", function () {
     const customerName = document.getElementById("customerNameField").value.trim();
-    const tableNum = document.getElementById("tableNumField").value.trim();
     
     if (!customerName) {
         alert("Please enter customer name");
         document.getElementById("customerNameField").focus();
-        return;
-    }
-    
-    if (!tableNum) {
-        alert("Please enter table number");
-        document.getElementById("tableNumField").focus();
         return;
     }
     
@@ -106,7 +99,6 @@ document.getElementById("placeOrderBtn").addEventListener("click", function () {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
             customer_name: customerName,
-            table_num: tableNum,
             items: items
         })
     })
@@ -118,7 +110,6 @@ document.getElementById("placeOrderBtn").addEventListener("click", function () {
             document.querySelectorAll(".qty-number").forEach(el => el.innerText = "0");
             updateReceipt();
             document.getElementById("customerNameField").value = "";
-            document.getElementById("tableNumField").value = "1";
             
             // Refresh payment tab
             location.reload();

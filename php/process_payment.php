@@ -70,7 +70,6 @@ if ($orders_result) {
                                         </span>
                                         <span class="payment-badge">UNPAID</span>
                                     </h3>
-                                    <p><strong>Table:</strong> <?php echo htmlspecialchars($order['table_num']); ?></p>
                                     <p><strong>Total:</strong> ₱<?php echo number_format((float)$order['total'], 2); ?></p>
                                     <p><strong>Time:</strong> <?php echo date('M j, g:i A', strtotime($order['created_at'])); ?></p>
                                     <?php if (!empty($order['items_summary'])): ?>
@@ -84,9 +83,9 @@ if ($orders_result) {
                                     <button class="btn-process" onclick='openPaymentModal(<?php echo (int)$order['id']; ?>, <?php echo json_encode($order['customer_name']); ?>, <?php echo (float)$order['total']; ?>)'>
                                         <i class="fas fa-money-bill-wave"></i> Process Payment
                                     </button>
-                                    <a href="order_detail.php?id=<?php echo (int)$order['id']; ?>" class="btn-view">
+                                    <button class="btn-view" onclick="viewOrderDetails(<?php echo (int)$order['id']; ?>)">
                                         <i class="fas fa-eye"></i> View Details
-                                    </a>
+                                    </button>
                                 </div>
                             </div>
                         <?php endforeach; ?>
@@ -98,6 +97,21 @@ if ($orders_result) {
                         </div>
                     <?php endif; ?>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Order Details Modal -->
+    <div id="orderDetailsModal" class="payment-modal">
+        <div class="payment-modal-content" style="max-width: 600px;">
+            <h3><i class="fas fa-receipt"></i> Order Details</h3>
+            <div id="orderDetailsContent" style="max-height: 500px; overflow-y: auto;">
+                <p style="text-align: center; padding: 40px; color: #999;">Loading...</p>
+            </div>
+            <div class="modal-buttons">
+                <button class="btn-cancel" onclick="closeOrderDetailsModal()">
+                    <i class="fas fa-times"></i> Close
+                </button>
             </div>
         </div>
     </div>
@@ -280,6 +294,82 @@ if ($orders_result) {
 
     document.getElementById('paymentModal').addEventListener('click', function(e) {
         if (e.target === this) closePaymentModal();
+    });
+
+    // Order Details Modal Functions
+    function viewOrderDetails(orderId) {
+        document.getElementById('orderDetailsModal').classList.add('open');
+        document.getElementById('orderDetailsContent').innerHTML = '<p style="text-align: center; padding: 40px; color: #999;">Loading...</p>';
+        
+        fetch('../api/get_order_details.php?id=' + orderId)
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    displayOrderDetails(data.order, data.items);
+                } else {
+                    document.getElementById('orderDetailsContent').innerHTML = '<p style="text-align: center; padding: 40px; color: #e74c3c;">Error loading order details</p>';
+                }
+            })
+            .catch(() => {
+                document.getElementById('orderDetailsContent').innerHTML = '<p style="text-align: center; padding: 40px; color: #e74c3c;">Failed to load order details</p>';
+            });
+    }
+
+    function displayOrderDetails(order, items) {
+        let html = `
+            <div style="background: #f9f9f9; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+                <h4 style="margin: 0 0 10px; color: #3d2d00;">Order #${order.id}</h4>
+                <p style="margin: 5px 0;"><strong>Customer:</strong> ${order.customer_name}</p>
+                <p style="margin: 5px 0;"><strong>Status:</strong> <span class="status-badge status-${order.status}">${order.status.charAt(0).toUpperCase() + order.status.slice(1)}</span></p>
+                <p style="margin: 5px 0;"><strong>Payment Status:</strong> <span class="payment-badge">${order.payment_status ? order.payment_status.toUpperCase() : 'UNPAID'}</span></p>
+                <p style="margin: 5px 0;"><strong>Date:</strong> ${new Date(order.created_at).toLocaleString()}</p>
+            </div>
+            
+            <h4 style="margin: 20px 0 10px; color: #3d2d00;">Order Items</h4>
+            <table style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr style="background: #f9f9f9; border-bottom: 2px solid #ECB212;">
+                        <th style="padding: 10px; text-align: left;">Item</th>
+                        <th style="padding: 10px; text-align: center;">Qty</th>
+                        <th style="padding: 10px; text-align: right;">Price</th>
+                        <th style="padding: 10px; text-align: right;">Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+        
+        items.forEach(item => {
+            const itemTotal = item.quantity * item.price;
+            html += `
+                <tr style="border-bottom: 1px solid #eee;">
+                    <td style="padding: 10px;">${item.product_name}</td>
+                    <td style="padding: 10px; text-align: center;">${item.quantity}</td>
+                    <td style="padding: 10px; text-align: right;">₱${parseFloat(item.price).toFixed(2)}</td>
+                    <td style="padding: 10px; text-align: right;">₱${itemTotal.toFixed(2)}</td>
+                </tr>
+            `;
+        });
+        
+        html += `
+                </tbody>
+                <tfoot>
+                    <tr style="background: #f9f9f9; font-weight: bold; border-top: 2px solid #3d2d00;">
+                        <td colspan="3" style="padding: 15px; text-align: right;">TOTAL:</td>
+                        <td style="padding: 15px; text-align: right; color: #3d2d00; font-size: 1.2rem;">₱${parseFloat(order.total).toFixed(2)}</td>
+                    </tr>
+                </tfoot>
+            </table>
+        `;
+        
+        document.getElementById('orderDetailsContent').innerHTML = html;
+    }
+
+    function closeOrderDetailsModal() {
+        document.getElementById('orderDetailsModal').classList.remove('open');
+    }
+
+    document.getElementById('orderDetailsModal').addEventListener('click', function(e) {
+        if (e.target === this) closeOrderDetailsModal();
     });
     </script>
 </body>
