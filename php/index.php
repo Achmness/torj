@@ -55,9 +55,12 @@ if(isset($_SESSION['role'])) {
             <h1>Coffee & Code</h1>
             <p>Where ideas brew and innovation flows</p>
             <div class="hero-buttons">
-                <a href="customer_order.php" class="btn btn-register">Order Now</a>
-                <a href="register.php" class="btn btn-register">Get Started</a>
-                <a href="login.php" class="btn btn-login">Sign In</a>
+                <?php if(isset($_SESSION['role']) && $_SESSION['role'] == 'customer'): ?>
+                <?php else: ?>
+                    <a href="customer_order.php" class="btn btn-register">Order Now</a>
+                    <a href="register.php" class="btn btn-register">Get Started</a>
+                    <a href="login.php" class="btn btn-login">Sign In</a>
+                <?php endif; ?>
             </div>
         </div>
     </section>
@@ -150,11 +153,13 @@ if(isset($_SESSION['role'])) {
     </section>
 
     <!-- CTA Section -->
+    <?php if(!isset($_SESSION['role']) || $_SESSION['role'] != 'customer'): ?>
     <section class="cta-section">
         <h2>Ready to Start Your Journey?</h2>
         <p>Join thousands of developers who fuel their creativity at The Debug Café</p>
         <a href="register.php" class="btn">Create Your Account</a>
     </section>
+    <?php endif; ?>
 
     <!-- Footer -->
     <footer>
