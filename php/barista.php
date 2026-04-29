@@ -82,7 +82,6 @@ if ($result) {
                         <tr>
                             <th>Order ID</th>
                             <th>Customer</th>
-                            <th>Table</th>
                             <th>Total</th>
                             <th>Status</th>
                             <th>Date</th>
@@ -96,13 +95,20 @@ if ($result) {
                                     <td><?php echo htmlspecialchars($order['customer_name']); ?></td>
                                     <td>₱<?php echo number_format((float)$order['total'], 2); ?></td>
                                     <td>
-                                        <?php if ($order['status'] === 'completed' || $order['status'] === 'cancelled'): ?>
+                                        <?php 
+                                        $payment_status = $order['payment_status'] ?? 'unpaid';
+                                        if ($order['status'] === 'completed' || $order['status'] === 'cancelled'): 
+                                        ?>
                                             <span class="status-badge status-<?php echo $order['status']; ?>">
                                                 <?php echo ucfirst($order['status']); ?>
                                             </span>
+                                        <?php elseif ($payment_status !== 'paid'): ?>
+                                            <span class="status-badge status-<?php echo $order['status']; ?>" style="opacity: 0.6;">
+                                                <?php echo ucfirst($order['status']); ?> (Payment Required)
+                                            </span>
                                         <?php else: ?>
                                             <select class="status-select" data-order-id="<?php echo $order['id']; ?>">
-                                                <option value="pending" <?php echo $order['status'] === 'pending' ? 'selected' : ''; ?>>Pending</option>
+                                                <option value="preparing" <?php echo $order['status'] === 'preparing' ? 'selected' : ''; ?>>Preparing</option>
                                                 <option value="ready" <?php echo $order['status'] === 'ready' ? 'selected' : ''; ?>>Ready</option>
                                                 <option value="completed" <?php echo $order['status'] === 'completed' ? 'selected' : ''; ?>>Completed</option>
                                                 <option value="cancelled" <?php echo $order['status'] === 'cancelled' ? 'selected' : ''; ?>>Cancelled</option>

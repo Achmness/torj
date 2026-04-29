@@ -139,10 +139,9 @@ if ($r) while ($row = mysqli_fetch_assoc($r)) $mock_orders[] = $row;
                         <tr>
                             <th>Order ID</th>
                             <th>Customer</th>
-                            <th>Table</th>
                             <th>Total</th>
                             <th>Status</th>
-                            <th></th>
+                            <th>Quick Action</th>
                         </tr>
                     </thead>
                     <tbody>

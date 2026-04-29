@@ -31,8 +31,7 @@ if(isset($_SESSION['role'])) {
         <div class="logo">
             <i class="fas fa-mug-hot"></i> The Debug Café
         </div>
-        <div class="nav-links">
-            <a href="customer_order.php">Order Now</a>
+        <div class="nav-links">     
             <?php if(isset($_SESSION['role']) && $_SESSION['role'] == 'customer'): ?>
                 <span style="color: #E8E0D5; margin: 0 1rem;">Welcome, <?php echo htmlspecialchars($_SESSION['fullname']); ?>!</span>
                 <a href="logout.php" class="btn btn-login">
@@ -56,10 +55,9 @@ if(isset($_SESSION['role'])) {
             <p>Where ideas brew and innovation flows</p>
             <div class="hero-buttons">
                 <?php if(isset($_SESSION['role']) && $_SESSION['role'] == 'customer'): ?>
+                    <a href="customer_order.php" class="btn btn-register">Order Now</a>
                 <?php else: ?>
                     <a href="customer_order.php" class="btn btn-register">Order Now</a>
-                    <a href="register.php" class="btn btn-register">Get Started</a>
-                    <a href="login.php" class="btn btn-login">Sign In</a>
                 <?php endif; ?>
             </div>
         </div>

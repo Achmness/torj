@@ -71,9 +71,9 @@ foreach ($transactions as $t) $total_earnings += (float)$t['total'];
                         <tr>
                             <th>Order ID</th>
                             <th>Customer</th>
-                            <th>Table</th>
                             <th>Total</th>
                             <th>Date</th>
+                            <th>Actions</th>
                             <th></th>
                         </tr>
                     </thead>

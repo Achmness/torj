@@ -2,11 +2,6 @@
 session_start();
 include "db.php";
 
-// Check if user is logged in
-$is_logged_in = isset($_SESSION['user_id']);
-$customer_name = $is_logged_in ? $_SESSION['fullname'] : '';
-$user_id = $is_logged_in ? $_SESSION['user_id'] : null;
-
 $products = [];
 $r = mysqli_query($conn, "SELECT * FROM products ORDER BY category, name");
 if ($r) while ($row = mysqli_fetch_assoc($r)) $products[] = $row;
@@ -142,19 +137,9 @@ $imgBase = $basePath ? $basePath . '/' : '';
                 
                 <!-- Customer Info Fields -->
                 <div class="customer-info-section">
-                    <?php if ($is_logged_in): ?>
-                        <div class="form-group">
-                            <label>Welcome, <?php echo htmlspecialchars($customer_name); ?>!</label>
-                            <input type="hidden" id="customerNameField" value="<?php echo htmlspecialchars($customer_name); ?>">
-                        </div>
-                    <?php else: ?>
-                        <div class="login-prompt">
-                            <i class="fas fa-info-circle" style="color: #ECB212; font-size: 1.2rem;"></i>
-                            <p style="margin: 0.5rem 0; color: #3d2d00; font-weight: 600;">Please sign in to place an order</p>
-                        </div>
-                    <?php endif; ?>
-                    
                     <div class="form-group">
+                        <label for="customerNameField">Your Name:</label>
+                        <input type="text" id="customerNameField" placeholder="Enter your name" class="customer-input">
                     </div>
                 </div>
                 
@@ -166,13 +151,7 @@ $imgBase = $basePath ? $basePath . '/' : '';
                 
                 <div class="receipt-footer">
                     <p class="total-text" id="grand-total">TOTAL: ₱0.00</p>
-                    <?php if ($is_logged_in): ?>
-                        <button class="checkout-btn" id="placeOrderBtn">PLACE ORDER</button>
-                    <?php else: ?>
-                        <a href="login.php" class="checkout-btn" style="text-align: center; text-decoration: none; display: block; width: 295px; cursor: pointer;">
-                            <i class="fas fa-sign-in-alt"></i> SIGN IN TO ORDER
-                        </a>
-                    <?php endif; ?>
+                    <button class="checkout-btn" id="placeOrderBtn">PLACE ORDER</button>
                 </div>
             </div>
         </div>
@@ -255,12 +234,6 @@ $imgBase = $basePath ? $basePath . '/' : '';
         const qtyDisplay = card.querySelector('.qty-number');
         
         card.querySelector('.plus').addEventListener('click', () => {
-            <?php if (!$is_logged_in): ?>
-                alert("Please sign in to add items to your order");
-                window.location.href = "login.php";
-                return;
-            <?php endif; ?>
-            
             if (!cart[id]) cart[id] = { name, price, qty: 0 };
             cart[id].qty++;
             qtyDisplay.innerText = cart[id].qty;
@@ -268,10 +241,6 @@ $imgBase = $basePath ? $basePath . '/' : '';
         });
         
         card.querySelector('.minus').addEventListener('click', () => {
-            <?php if (!$is_logged_in): ?>
-                return;
-            <?php endif; ?>
-            
             if (cart[id] && cart[id].qty > 0) {
                 cart[id].qty--;
                 qtyDisplay.innerText = cart[id].qty;
@@ -282,16 +251,11 @@ $imgBase = $basePath ? $basePath . '/' : '';
     });
 
     document.getElementById("placeOrderBtn")?.addEventListener("click", function () {
-        <?php if (!$is_logged_in): ?>
-            alert("Please sign in to place an order");
-            window.location.href = "login.php";
-            return;
-        <?php endif; ?>
-        
         const customerName = document.getElementById("customerNameField").value.trim();
         
         if (!customerName) {
-            alert("Unable to get your name. Please try logging in again.");
+            alert("Please enter your name");
+            document.getElementById("customerNameField").focus();
             return;
         }
         

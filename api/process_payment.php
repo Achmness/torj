@@ -120,7 +120,8 @@ if ($payment_method === 'online' && $online_payment_method) {
 $cashier_id = $_SESSION['user_id'];
 
 $setParts = [];
-$setParts[] = "status = 'completed'";
+// Keep status as is, don't change to completed
+// $setParts[] = "status = 'completed'";
 
 if ($has_payment_status) $setParts[] = "payment_status = 'paid'";
 if ($has_updated_at) $setParts[] = "updated_at = NOW()";
@@ -171,7 +172,7 @@ call_user_func_array([$stmt, 'bind_param'], array_merge([$types], $bindRefs));
 if ($stmt->execute()) {
     $response_data = [
         'success' => true, 
-        'message' => 'Payment processed successfully',
+        'message' => 'Payment processed successfully - Order status remains unchanged',
         'payment_method' => $payment_method,
         'original_amount' => $order['total'],
         'discount_percent' => $discount_percent,

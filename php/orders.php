@@ -118,13 +118,20 @@ if ($result) {
                                     <td><?php echo htmlspecialchars($order['customer_name']); ?></td>
                                     <td>₱<?php echo number_format((float)$order['total'], 2); ?></td>
                                     <td>
-                                        <?php if ($order['status'] === 'completed' || $order['status'] === 'cancelled'): ?>
+                                        <?php 
+                                        $payment_status = $order['payment_status'] ?? 'unpaid';
+                                        if ($order['status'] === 'completed' || $order['status'] === 'cancelled'): 
+                                        ?>
                                             <span class="status-badge status-<?php echo $order['status']; ?>">
                                                 <?php echo ucfirst($order['status']); ?>
                                             </span>
+                                        <?php elseif ($payment_status !== 'paid'): ?>
+                                            <span class="status-badge status-<?php echo $order['status']; ?>" style="opacity: 0.6;">
+                                                <?php echo ucfirst($order['status']); ?> (Payment Required)
+                                            </span>
                                         <?php else: ?>
                                             <select class="status-select" data-order-id="<?php echo $order['id']; ?>">
-                                                <option value="pending" <?php echo $order['status'] === 'pending' ? 'selected' : ''; ?>>Pending</option>
+                                                <option value="preparing" <?php echo $order['status'] === 'preparing' ? 'selected' : ''; ?>>Preparing</option>
                                                 <option value="ready" <?php echo $order['status'] === 'ready' ? 'selected' : ''; ?>>Ready</option>
                                                 <option value="completed" <?php echo $order['status'] === 'completed' ? 'selected' : ''; ?>>Completed</option>
                                                 <option value="cancelled" <?php echo $order['status'] === 'cancelled' ? 'selected' : ''; ?>>Cancelled</option>
@@ -133,7 +140,6 @@ if ($result) {
                                     </td>
                                     <td>
                                         <?php 
-                                        $payment_status = $order['payment_status'] ?? 'unpaid';
                                         $payment_class = $payment_status === 'paid' ? 'paid' : 'unpaid';
                                         ?>
                                         <span class="payment-badge <?php echo $payment_class; ?>">
@@ -143,9 +149,6 @@ if ($result) {
                                     <td><?php echo date('M j, g:i A', strtotime($order['created_at'])); ?></td>
                                     <td>
                                         <a href="order_detail.php?id=<?php echo (int)$order['id']; ?>" class="btn-view">View</a>
-                                        <?php if ($payment_status === 'unpaid'): ?>
-                                            <button class="btn-process-payment" onclick="processPayment(<?php echo $order['id']; ?>)">Process Payment</button>
-                                        <?php endif; ?>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
@@ -198,34 +201,6 @@ if ($result) {
                 }
             });
         });
-
-        // Process payment
-        function processPayment(orderId) {
-            if (confirm(`Process payment for order #${orderId}?`)) {
-                fetch('../api/process_payment.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        order_id: orderId
-                    })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        alert('Payment processed successfully!');
-                        location.reload();
-                    } else {
-                        alert('Error: ' + (data.error || 'Failed to process payment'));
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('Failed to process payment');
-                });
-            }
-        }
     </script>
 </body>
 </html>
